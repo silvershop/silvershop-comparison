@@ -1,0 +1,11 @@
+---
+Name: productcomparison
+After: 'shop/*'
+---
+Product:
+  extensions:
+    - 'ProductFeaturesExtension'
+ProductCatalogAdmin:
+  managed_models:
+    - 'Product'
+    - 'Feature'
