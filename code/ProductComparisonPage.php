@@ -16,7 +16,6 @@ class ProductComparisonPage_Controller extends Page_Controller{
 	}
 
 	public function ValuesForFeature($id){
-
 		$out = new Arraylist();
 		foreach($this->Comp() as $comp){
 			$out->push(

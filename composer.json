@@ -1,0 +1,18 @@
+{
+	"name": "burnbright/silverstripe-shop-comparison",
+	"description": "Submodule for Silverstripe shop which allows you to compare products in a table.",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "ecommerce", "shop", "comparison", "compare", "products"],
+	"license": "BSD2",
+	"authors": [{
+		"name": "Jeremy Shipman",
+		"email": "jeremy@burnbright.net",
+		"homepage": "http://github.com/jedateach"
+	}],
+	"extra": {
+		"installer-name": "shop_comparison"
+	},
+	"require": {
+		"burnbright/silverstripe-shop": "*"
+	}
+}
