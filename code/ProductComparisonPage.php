@@ -7,33 +7,45 @@ class ProductComparisonPage extends Page{
 
 class ProductComparisonPage_Controller extends Page_Controller{
 	
-	//add product to compare
-	//remove product from compare
-	//display comparison
 	private static $allowed_actions = array(
-		'add'
+		'add','remove'
 	);
 
-	function Comp(){
+	public function Comp(){
 		return Product::get()->filter("ID",$this->getSelectionIDs());
 	}
 
-	function Features(){
-		//get either the combination of, or the intersection of features for each product
-		
+	public function ValuesForFeature($id){
+
+		$out = new Arraylist();
+		foreach($this->Comp() as $comp){
+			$out->push(
+				Product_Features::get()
+					->filter("ProductID",$comp->ID)
+					->filter("FeatureID",$id)
+					->first()
+			);
+		}
+		return $out;
 	}
 
-	function add($request){
+	public function Features(){
+		 return Feature::get()
+		 	->leftJoin("Product_Features","\"Feature\".\"ID\" = \"Product_Features\".\"FeatureID\"")
+		 	->filter("ProductID", $this->getSelectionIDs());
+	}
+
+	public function add($request){
 		$this->addToSelection($request->param('ID'));
 		$this->redirect($this->Link());
 	}
 
-	function remove($request){
+	public function remove($request){
 		$this->removeFromSelection($request->param('ID'));
 		$this->redirect($this->Link());
 	}
 
-	function addToSelection($id){
+	public function addToSelection($id){
 		if($product = Product::get()->byID($id)){
 			$all = $this->getSelectionIDs();
 			$all[$id] = $id;
@@ -42,7 +54,7 @@ class ProductComparisonPage_Controller extends Page_Controller{
 		//exception
 	}
 
-	function removeFromSelection($id){
+	public function removeFromSelection($id){
 		if($product = Product::get()->byID($id)){
 			$all = $this->getSelectionIDs();
 			unset($all[$id]);
@@ -57,7 +69,8 @@ class ProductComparisonPage_Controller extends Page_Controller{
 
 	private function getSelectionIDs(){
 		if($ids = Session::get("ProductComparisons")){
-			return explode(',',$ids);
+			$ids = explode(',',$ids);
+			return array_combine($ids, $ids);
 		}
 		return array();
 	}

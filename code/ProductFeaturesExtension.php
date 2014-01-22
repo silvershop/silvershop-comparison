@@ -24,6 +24,16 @@ class ProductFeaturesExtension extends DataExtension{
 		}
 	}
 
+	function CompareRemoveLink(){
+		if($comparepage = ProductComparisonPage::get()->first()){
+			return Controller::join_links(
+				$comparepage->Link(),
+				"remove",
+				$this->owner->ID
+			);
+		}
+	}
+
 }
 
 /**
