@@ -5,7 +5,12 @@ After: 'shop/*'
 Product:
   extensions:
     - 'ProductFeaturesExtension'
+Product_Controller:
+  extensions:
+    - 'Product_ControllerFeaturesExtension'
 ProductCatalogAdmin:
   managed_models:
     - 'Product'
+    - 'ProductCategory'
     - 'Feature'
+    - 'FeatureGroup'
