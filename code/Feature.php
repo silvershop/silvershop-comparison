@@ -4,7 +4,8 @@ class Feature extends Dataobject{
 
 	private static $db = array(
 		'Title' => 'Varchar',
-		'Unit' => 'Varchar'
+		'Unit' => 'Varchar',
+		'ValueType' => "Enum('Boolean,Number,String','String')"
 	);
 	private static $has_many = array(
 		"Products" => "Product_Feature"
@@ -25,7 +26,8 @@ class Feature extends Dataobject{
 	function getCMSFields(){
 		$fields = new FieldList(
 			TextField::create("Title"),
-			TextField::create("Unit")
+			TextField::create("Unit"),
+			DropdownField::create("ValueType","Value Type", $this->dbObject('ValueType')->enumValues())
 		);
 		$groups = FeatureGroup::get();
 		if($groups->exists()){
