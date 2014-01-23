@@ -13,7 +13,13 @@ Detail specific features of each product, and then compare them in a dedicated i
 
 ## Installation
 
+Require the submodule via composer, from site root:
+
 ```sh
 composer require burnbright/silverstripe-shop-comparison
 
 ```
+
+## License
+
+BSD2
