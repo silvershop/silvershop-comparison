@@ -3,7 +3,7 @@
 class ProductFeaturesExtension extends DataExtension{
 
 	private static $has_many = array(
-		'Features' => 'Product_Features'
+		'Features' => 'ProductFeatureValue'
 	);
 
 	function updateCMSFields(FieldList $fields){
@@ -43,11 +43,11 @@ class Product_ControllerFeaturesExtension extends Extension{
 	 */
 	function GroupedFeatures($showungrouped = false){
 		$features = $this->owner->Features()
-			->innerJoin("Feature","Feature.ID = Product_Features.FeatureID");
+			->innerJoin("Feature","Feature.ID = ProductFeatureValue.FeatureID");
 		//figure out feature groups
 		$groupids = FeatureGroup::get()
 				->innerJoin("Feature","Feature.GroupID = FeatureGroup.ID")
-				->innerJoin("Product_Features","Feature.ID = Product_Features.FeatureID")
+				->innerJoin("ProductFeatureValue","Feature.ID = ProductFeatureValue.FeatureID")
 				->filter("ProductID",$this->owner->ID)
 				->getIDList();
 		//pack existin features into seperate lists

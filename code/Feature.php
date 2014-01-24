@@ -7,7 +7,6 @@ class Feature extends Dataobject{
 		'Unit' => 'Varchar'
 	);
 	private static $has_many = array(
-		"Values" => "FeatureValue",
 		"Products" => "Product_Feature"
 	);
 	private static $has_one = array(	
@@ -18,8 +17,7 @@ class Feature extends Dataobject{
 	);
 	private static $summary_fields = array(
 		"Title" => "Title",
-		"Unit" => "Unit",
-		"Values.count" => "Values"
+		"Unit" => "Unit"
 	);
 	private static $singular_name = "Feature";
 	private static $plural_name = "Features";
@@ -29,12 +27,6 @@ class Feature extends Dataobject{
 			TextField::create("Title"),
 			TextField::create("Unit")
 		);
-		if($this->isInDB()){
-			$fields->push(GridField::create("Values","Values",
-				$this->Values(),
-				GridFieldConfig_RecordEditor::create()
-			));
-		}
 		$groups = FeatureGroup::get();
 		if($groups->exists()){
 			$fields->insertAfter(

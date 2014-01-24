@@ -19,7 +19,7 @@ class ProductComparisonPage_Controller extends Page_Controller{
 		$out = new Arraylist();
 		foreach($this->Comp() as $comp){
 			$out->push(
-				Product_Features::get()
+				ProductFeatureValue::get()
 					->filter("ProductID",$comp->ID)
 					->filter("FeatureID",$id)
 					->first()
@@ -30,7 +30,7 @@ class ProductComparisonPage_Controller extends Page_Controller{
 
 	public function Features(){
 		 return Feature::get()
-		 	->leftJoin("Product_Features","\"Feature\".\"ID\" = \"Product_Features\".\"FeatureID\"")
+		 	->leftJoin("ProductFeatureValue","\"Feature\".\"ID\" = \"ProductFeatureValue\".\"FeatureID\"")
 		 	->filter("ProductID", $this->getSelectionIDs());
 	}
 

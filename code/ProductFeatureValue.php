@@ -3,17 +3,20 @@
 /**
  * Pivot table. Connects products with features, but also includes a value
  */
-class Product_Features extends DataObject{
+class ProductFeatureValue extends DataObject{
+
+	private static $db = array(
+		"Value" => "Varchar"
+	);
 
 	private static $has_one = array(
 		"Product" => "Product",
-		"Feature" => "Feature",
-		"Value" => "FeatureValue"
+		"Feature" => "Feature"
 	);
 
 	private static $summary_fields	=  array(
 		"Feature.Title" => "Feature",
-		"Value.Value" => "Value",
+		"Value" => "Value",
 		"Feature.Unit" => "Unit"
 	);
 
@@ -25,22 +28,11 @@ class Product_Features extends DataObject{
 		$feature = $this->Feature();
 		if($feature->exists()){
 			$fields->push(ReadonlyField::create("FeatureTitle","Feature", $feature->Title));
-			$values = $feature->Values();
-			$editfeaturelink = "admin/catalog/Feature/EditForm/field/Feature/item/$feature->ID/edit";
-			if($values->exists()){
-				$fields->push(
-					DropdownField::create("ValueID","Value", $values->map('ID','Value'))
-				);
-			}else{
-				$fields->push(LiteralField::create("ValueID","<p class=\"message bad\">This feature has no values.</p>"));
-				//TODO: allow entering custom values
-			}
-			$fields->push(LiteralField::create("AddValues","<a href=\"$editfeaturelink\">Edit / add feature values</a>"));
+			$fields->push(TextField::create("Value"));
 		}else{
 			$features = Feature::get()
 				->filter("ID:not",$this->Product()->Features()->getIDList());
 			$fields->push(DropdownField::create("FeatureID","Feature",$features->map()->toArray()));
-			$fields->push(LiteralField::create("ValueID","<p class=\"message warning\">You can select a value for this feature once you have saved.</p>"));
 		}
 		
 		return $fields;
