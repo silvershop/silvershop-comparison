@@ -48,6 +48,15 @@ class Feature extends Dataobject{
 		return $fields;
 	}
 
+	function getValueField(){
+		$fields = array(
+			'Boolean' => CheckboxField::create("Value"),
+			'Number' => NumericField::create("Value"),
+			'String' => TextField::create("Value")
+		);
+		return $fields[$this->ValueType];
+	}
+
 	//TODO: on before delete - delete values
 
 	//validate: must have title

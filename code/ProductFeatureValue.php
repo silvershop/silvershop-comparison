@@ -28,7 +28,7 @@ class ProductFeatureValue extends DataObject{
 		$feature = $this->Feature();
 		if($feature->exists()){
 			$fields->push(ReadonlyField::create("FeatureTitle","Feature", $feature->Title));
-			$fields->push(TextField::create("Value"));
+			$fields->push($feature->getValueField());
 		}else{
 			$features = Feature::get()
 				->filter("ID:not",$this->Product()->Features()->getIDList());
