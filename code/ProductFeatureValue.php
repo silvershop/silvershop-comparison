@@ -44,5 +44,9 @@ class ProductFeatureValue extends DataObject{
 
 	//validation: must have a product, feature, then a value must be from given feature
 		//can't add feature to a product that already has it
+	
+	function TypedValue(){
+		return $this->Feature()->getValueDBField($this->Value);
+	}
 
 }

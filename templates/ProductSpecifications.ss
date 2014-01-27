@@ -17,7 +17,7 @@
 			    <% loop Children %>
 					<tr>
 						<th>$Title</th>
-						<td>$Value $Feature.Unit</td>
+						<td><% include TypedValue %></td>
 					</tr>
 				<% end_loop %>
 			<% end_loop %>
@@ -25,7 +25,7 @@
 			<% loop Features %>
 				<tr>
 					<th>$Title</th>
-					<td>$Value $Feature.Unit</td>
+					<td><% include TypedValue %></td>
 				</tr>
 			<% end_loop %>
 		<% end_if %>

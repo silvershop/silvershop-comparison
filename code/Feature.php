@@ -57,6 +57,17 @@ class Feature extends Dataobject{
 		return $fields[$this->ValueType];
 	}
 
+	function getValueDBField($value){
+		$fields = array(
+			'Boolean' => new Boolean(),
+			'Number' => new Float(),
+			'String' => new Varchar()
+		);
+		$field =  $fields[$this->ValueType];
+		$field->setValue($value);
+		return $field;
+	}
+
 	//TODO: on before delete - delete values
 
 	//validate: must have title

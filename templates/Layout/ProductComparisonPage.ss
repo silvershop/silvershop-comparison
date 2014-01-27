@@ -11,9 +11,7 @@
 		    <tr>
 		    	<th>$Title</th>
 		    	<% loop Up.ValuesForFeature($ID) %>
-			    	<td>
-			    		$Value $Unit
-			    	</td>
+			    	<td><% include TypedValue %></td>
 			    <% end_loop %>
 		    </tr>
 		<% end_loop %>
