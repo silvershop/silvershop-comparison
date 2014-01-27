@@ -30,8 +30,10 @@ class ProductFeatureValue extends DataObject{
 			$fields->push(ReadonlyField::create("FeatureTitle","Feature", $feature->Title));
 			$fields->push($feature->getValueField());
 		}else{
-			$features = Feature::get()
-				->filter("ID:not",$this->Product()->Features()->getIDList());
+			$selected = Feature::get()
+				->innerJoin("ProductFeatureValue","Feature.ID = ProductFeatureValue.FeatureID")
+				->getIDList();
+			$features = Feature::get()->filter("ID:not",$selected);
 			$fields->push(DropdownField::create("FeatureID","Feature",$features->map()->toArray()));
 		}
 		
