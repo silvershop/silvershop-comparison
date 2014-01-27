@@ -2,6 +2,7 @@
 
 class ProductComparisonPage extends Page{
 	
+	private static $icon = 'shop_comparison/images/compare.png';
 
 }
 
@@ -36,6 +37,7 @@ class ProductComparisonPage_Controller extends Page_Controller{
 
 	public function add($request){
 		$this->addToSelection($request->param('ID'));
+		//TODO: if first, then redirect back with success message
 		$this->redirect($this->Link());
 	}
 

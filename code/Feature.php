@@ -68,8 +68,6 @@ class Feature extends Dataobject{
 		return $field;
 	}
 
-	//TODO: on before delete - delete values
-
 	//validate: must have title
 
 }
