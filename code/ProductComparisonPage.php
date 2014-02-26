@@ -1,18 +1,24 @@
 <?php
 
+/**
+ * @package shop_comparsion
+ */
 class ProductComparisonPage extends Page{
 	
 	private static $icon = 'shop_comparison/images/compare.png';
 
 }
 
-class ProductComparisonPage_Controller extends Page_Controller{
+/**
+ * @package shop_comparsion
+ */
+class ProductComparisonPage_Controller extends Page_Controller {
 	
 	private static $allowed_actions = array(
 		'add','remove'
 	);
 
-	public function Comp(){
+	public function Comp() {
 		return Product::get()->filter("ID",$this->getSelectionIDs());
 	}
 

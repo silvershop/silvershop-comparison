@@ -1,12 +1,15 @@
 <?php
 
-class ProductFeaturesExtension extends DataExtension{
+/**
+ * @package shop_comparsion
+ */
+class ProductFeaturesExtension extends DataExtension {
 
 	private static $has_many = array(
 		'Features' => 'ProductFeatureValue'
 	);
 
-	function updateCMSFields(FieldList $fields){
+	public function updateCMSFields(FieldList $fields) {
 		$fields->addFieldToTab("Root.Features",
 			GridField::create("Features", "Features", $this->owner->Features(),
 				GridFieldConfig_RecordEditor::create()
@@ -14,29 +17,43 @@ class ProductFeaturesExtension extends DataExtension{
 		);
 	}
 
-	function CompareLink(){
-		if($comparepage = ProductComparisonPage::get()->first()){
-			return Controller::join_links(
-				$comparepage->Link(),
-				"add",
-				$this->owner->ID
-			);
+	public function CompareLink() {
+		if($this->isCompared()) {
+			return $this->CompareRemoveLink();
+		}
+		
+		return $this->CompareAddLink();
+	}
+
+	public function CompareAddLink() {
+		if($page = ProductComparisonPage::get()->first()) {
+			return $page->Link("add/". $this->owner->ID);
 		}
 	}
 
-	function CompareRemoveLink(){
-		if($comparepage = ProductComparisonPage::get()->first()){
-			return Controller::join_links(
-				$comparepage->Link(),
-				"remove",
-				$this->owner->ID
-			);
+	public function CompareRemoveLink() {
+		if($page = ProductComparisonPage::get()->first()) {
+			return $page->Link("remove/". $this->owner->ID);
 		}
 	}
 
+	public function isCompared() {
+		$products = Session::get("ProductComparisons");
+
+		if($products) {
+			$products = explode(",", $products);
+
+			return in_array($this->owner->ID, $products);
+		}
+
+		return false;
+	}
 }
 
-class Product_ControllerFeaturesExtension extends Extension{
+/**
+ * @package shop_comparsion
+ */
+class Product_ControllerFeaturesExtension extends Extension {
 
 	/**
 	 * Override features list with grouping.
@@ -52,13 +69,15 @@ class Product_ControllerFeaturesExtension extends Extension{
 				->getIDList();
 		//pack existin features into seperate lists
 		$result = new ArrayList();
-		foreach($groupids as $groupid){
+
+		foreach($groupids as $groupid) {
 			$group = FeatureGroup::get()->byID($groupid);
 			$result->push(new ArrayData(array(
 				'Group' => $group,
 				'Children' => $features->filter("GroupID", $groupid)
 			)));
 		}
+
 		//ungrouped
 		$ungrouped = $features->filter("GroupID:not", $groupids);
 		if($ungrouped->exists() && $showungrouped){
