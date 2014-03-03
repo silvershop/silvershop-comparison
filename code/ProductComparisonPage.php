@@ -17,6 +17,100 @@ class ProductComparisonPage extends Page {
 	 */
 	private static $icon = 'shop_comparison/images/compare.png';
 
+
+	/**
+	 * @param int $id
+	 * 
+	 * @return bool|null
+	 */
+	public function addToSelection($id) {
+		if($product = Product::get()->byID($id)) {
+			$all = $this->getSelectionIDs();
+			$all[$id] = $id;
+
+			if($max = Config::inst()->get('ProductComparisonPage', 'max_product_comparsions')) {
+				if(count($all) > $max) {
+					return false;
+				}
+			}
+
+			$this->setSelectionIDs($all);
+
+			return true;
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return bool|null
+	 */
+	public function removeFromSelection($id) {
+		if($product = Product::get()->byID($id)) {
+			$all = $this->getSelectionIDs();
+			
+			if(isset($all[$id])) {
+				unset($all[$id]);
+			}
+
+			$this->setSelectionIDs($all);
+
+			return true;
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param array $ids
+	 *
+	 * @return ProductComparsionPage
+	 */
+	private function setSelectionIDs(array $ids) {
+		Session::set("ProductComparisons", implode(',',$ids));
+
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getSelectionIDs() {
+		if($ids = Session::get("ProductComparisons")) {
+			$ids = explode(',',$ids);
+		
+			return array_combine($ids, $ids);
+		}
+
+		return array();
+	}
+
+	/**
+	 * @return DataList
+	 */
+	public function Comp() {
+		return Product::get()->filter("ID", $this->getSelectionIDs());
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function getProductCount() {
+		return count($this->getSelectionIDs());
+	}
+
+	/**
+	 * @return DataList
+	 */
+	public function Features() {
+		 return Feature::get()
+		 	->leftJoin("ProductFeatureValue","\"Feature\".\"ID\" = \"ProductFeatureValue\".\"FeatureID\"")
+		 	->filter("ProductID", $this->getSelectionIDs());
+	}
+
 }
 
 /**
@@ -28,10 +122,6 @@ class ProductComparisonPage_Controller extends Page_Controller {
 		'add',
 		'remove'
 	);
-
-	public function Comp() {
-		return Product::get()->filter("ID", $this->getSelectionIDs());
-	}
 
 	/**
 	 * Returns an {@link ArrayList} with all the values up to 
@@ -104,12 +194,6 @@ class ProductComparisonPage_Controller extends Page_Controller {
 		return $out;
 	}
 
-	public function Features() {
-		 return Feature::get()
-		 	->leftJoin("ProductFeatureValue","\"Feature\".\"ID\" = \"ProductFeatureValue\".\"FeatureID\"")
-		 	->filter("ProductID", $this->getSelectionIDs());
-	}
-
 	public function add($request) {
 		$result = $this->addToSelection($request->param('ID'));
 
@@ -144,65 +228,6 @@ class ProductComparisonPage_Controller extends Page_Controller {
 		}
 
 		$this->redirect($this->Link());
-	}
-
-	/**
-	 * @param int $id
-	 * 
-	 * @return bool|null
-	 */
-	public function addToSelection($id) {
-		if($product = Product::get()->byID($id)) {
-			$all = $this->getSelectionIDs();
-			$all[$id] = $id;
-
-			if($max = Config::inst()->get('ProductComparisonPage', 'max_product_comparsions')) {
-				if(count($all) > $max) {
-					return false;
-				}
-			}
-
-			$this->setSelectionIDs($all);
-
-			return true;
-		}
-
-		return null;
-	}
-
-	/**
-	 * @param int $id
-	 *
-	 * @return bool|null
-	 */
-	public function removeFromSelection($id) {
-		if($product = Product::get()->byID($id)) {
-			$all = $this->getSelectionIDs();
-			
-			if(isset($all[$id])) {
-				unset($all[$id]);
-			}
-
-			$this->setSelectionIDs($all);
-
-			return true;
-		}
-
-		return null;
-	}
-
-	private function setSelectionIDs(array $ids) {
-		Session::set("ProductComparisons", implode(',',$ids));
-	}
-
-	private function getSelectionIDs() {
-		if($ids = Session::get("ProductComparisons")) {
-			$ids = explode(',',$ids);
-		
-			return array_combine($ids, $ids);
-		}
-
-		return array();
 	}
 
 }
