@@ -32,9 +32,11 @@ class ProductFeatureValue extends DataObject{
 		}else{
 			$selected = Feature::get()
 				->innerJoin("ProductFeatureValue","Feature.ID = ProductFeatureValue.FeatureID")
+				->filter("ProductFeatureValue.ProductID", Controller::curr()->currentPageID())
 				->getIDList();
 			$features = Feature::get()->filter("ID:not",$selected);
 			$fields->push(DropdownField::create("FeatureID","Feature",$features->map()->toArray()));
+			$fields->push(LiteralField::create("creationnote", "<p class=\"message\">You can choose a value for this feature after saving.</p>"));
 		}
 		
 		return $fields;
