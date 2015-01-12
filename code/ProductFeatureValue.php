@@ -1,13 +1,18 @@
 <?php
 
 /**
- * Pivot table. Connects products with features, but also includes a value
+ * Pivot table. Connects products with features, but also includes a value.
+ *
+ * @package shop_comparsion
  */
-class ProductFeatureValue extends DataObject{
+class ProductFeatureValue extends DataObject {
 
 	private static $db = array(
-		"Value" => "Varchar"
+		"Value" => "Varchar",
+		"Sort" => 'Int'
 	);
+
+	private static $default_sort = 'Sort ASC';
 
 	private static $has_one = array(
 		"Product" => "Product",
@@ -21,15 +26,17 @@ class ProductFeatureValue extends DataObject{
 	);
 
 	private static $singular_name = "Feature";
+
 	private static $plural_name = "Features";
 
-	function getCMSFields(){
+	public function getCMSFields() {
 		$fields = new FieldList();
 		$feature = $this->Feature();
-		if($feature->exists()){
+
+		if($feature->exists()) {
 			$fields->push(ReadonlyField::create("FeatureTitle","Feature", $feature->Title));
 			$fields->push($feature->getValueField());
-		}else{
+		} else {
 			$selected = Feature::get()
 				->innerJoin("ProductFeatureValue","Feature.ID = ProductFeatureValue.FeatureID")
 				->filter("ProductFeatureValue.ProductID", Controller::curr()->currentPageID())

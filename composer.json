@@ -13,6 +13,7 @@
 		"installer-name": "shop_comparison"
 	},
 	"require": {
-		"burnbright/silverstripe-shop": "*"
+		"burnbright/silverstripe-shop": "*",
+		"ajshort/silverstripe-gridfieldextensions": "*",
 	}
 }

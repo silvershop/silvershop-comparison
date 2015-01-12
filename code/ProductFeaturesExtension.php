@@ -11,10 +11,26 @@ class ProductFeaturesExtension extends DataExtension {
 
 	public function updateCMSFields(FieldList $fields) {
 		$fields->addFieldToTab("Root.Features",
-			GridField::create("Features", "Features", $this->owner->Features(),
+			$grid = GridField::create("Features", "Features", $this->owner->Features(),
 				GridFieldConfig_RecordEditor::create()
 			)
 		);
+
+		$grid->getConfig()
+			->removeComponentsByType('GridFieldDataColumns')
+			->removeComponentsByType('GridFieldAddNewButton')
+			->addComponent(new GridFieldAddNewInlineButton())
+			->addComponent(new GridFieldEditableColumns())
+			->addComponent(new GridFieldOrderableRows());
+
+		$grid->getConfig()->getComponentByType('GridFieldEditableColumns')->setDisplayFields(array(
+			'FeatureID'  => function($record, $column, $grid) {
+				return new DropdownField($column, 'Feature', Feature::get()->map('ID', 'Title')->toArray());
+			},
+			'Value' => function($record, $column, $grid) {
+				return new TextField($column, 'Value');
+			}
+		));
 	}
 
 	public function CompareLink() {
