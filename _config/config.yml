@@ -7,10 +7,14 @@ Product:
     - 'ProductFeaturesExtension'
 Product_Controller:
   extensions:
-    - 'Product_ControllerFeaturesExtension'
+    - 'ProductControllerFeaturesExtension'
 ProductCatalogAdmin:
   managed_models:
     - 'Product'
     - 'ProductCategory'
     - 'Feature'
     - 'FeatureGroup'
+
+LeftAndMain:
+  extra_requirements_javascript:
+    - shop_comparison/javascript/shop_comparsion_admin.js

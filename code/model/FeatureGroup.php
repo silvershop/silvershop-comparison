@@ -1,6 +1,9 @@
 <?php
 
-class FeatureGroup extends DataObject{
+/**
+ * @package shop_comparsion
+ */
+class FeatureGroup extends DataObject {
 
 	private static $db = array(
 		"Title" => "Varchar"
@@ -11,7 +14,6 @@ class FeatureGroup extends DataObject{
 	);
 
 	private static $singular_name = "Feature Group";
-	private static $plural_name = "Feature Groups";
 
-	//validate: must have title
+	private static $plural_name = "Feature Groups";
 }

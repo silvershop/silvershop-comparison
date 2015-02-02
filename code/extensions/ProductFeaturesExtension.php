@@ -25,10 +25,20 @@ class ProductFeaturesExtension extends DataExtension {
 
 		$grid->getConfig()->getComponentByType('GridFieldEditableColumns')->setDisplayFields(array(
 			'FeatureID'  => function($record, $column, $grid) {
-				return new DropdownField($column, 'Feature', Feature::get()->map('ID', 'Title')->toArray());
+				$dropdown = new DropdownField($column, 'Feature', Feature::get()->map('ID', 'Title')->toArray());
+				$dropdown->addExtraClass('on_feature_select_fetch_value_field');
+
+				return $dropdown;
 			},
 			'Value' => function($record, $column, $grid) {
-				return new TextField($column, 'Value');
+				if($record->FeatureID) {
+					$field = $record->Feature()->getValueField();
+					$field->setName($column);
+
+					return $field;
+				}
+
+				return new HiddenField($column);
 			}
 		));
 	}
@@ -64,45 +74,4 @@ class ProductFeaturesExtension extends DataExtension {
 
 		return false;
 	}
-}
-
-/**
- * @package shop_comparsion
- */
-class Product_ControllerFeaturesExtension extends Extension {
-
-	/**
-	 * Override features list with grouping.
-	 */
-	function GroupedFeatures($showungrouped = false){
-		$features = $this->owner->Features()
-			->innerJoin("Feature","Feature.ID = ProductFeatureValue.FeatureID");
-		//figure out feature groups
-		$groupids = FeatureGroup::get()
-				->innerJoin("Feature","Feature.GroupID = FeatureGroup.ID")
-				->innerJoin("ProductFeatureValue","Feature.ID = ProductFeatureValue.FeatureID")
-				->filter("ProductID",$this->owner->ID)
-				->getIDList();
-		//pack existin features into seperate lists
-		$result = new ArrayList();
-
-		foreach($groupids as $groupid) {
-			$group = FeatureGroup::get()->byID($groupid);
-			$result->push(new ArrayData(array(
-				'Group' => $group,
-				'Children' => $features->filter("GroupID", $groupid)
-			)));
-		}
-
-		//ungrouped
-		$ungrouped = $features->filter("GroupID:not", $groupids);
-		if($ungrouped->exists() && $showungrouped){
-			$result->push(new ArrayData(array(
-				'Children' => $ungrouped
-			)));
-		}
-
-		return $result;
-	}
-
 }
