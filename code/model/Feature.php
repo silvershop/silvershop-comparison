@@ -15,7 +15,7 @@ class Feature extends DataObject {
 		"Products" => "Product_Feature"
 	);
 
-	private static $has_one = array(	
+	private static $has_one = array(
 		"Group" => "FeatureGroup"
 	);
 
@@ -40,7 +40,7 @@ class Feature extends DataObject {
 		);
 
 		$groups = FeatureGroup::get();
-		
+
 		if($groups->exists()) {
 			$fields->insertAfter(
 				DropdownField::create("GroupID","Group",$groups->map()->toArray())
@@ -78,7 +78,7 @@ class Feature extends DataObject {
 	public function getValueDBField($value) {
 		$fields = array(
 			'Boolean' => new Boolean(),
-			'Number' => new Float(),
+			'Number' => new DBFloat(),
 			'String' => new Varchar()
 		);
 		$field =  $fields[$this->ValueType];
