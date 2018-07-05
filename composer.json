@@ -1,19 +1,34 @@
 {
-	"name": "silvershop/comparison",
-	"description": "Submodule for SilverShop which allows you to compare products in a table.",
-	"type": "silverstripe-module",
-	"keywords": ["silverstripe", "ecommerce", "shop", "silvershop", "comparison", "compare", "products"],
-	"license": "BSD2",
-	"authors": [{
-		"name": "Jeremy Shipman",
-		"email": "jeremy@burnbright.net",
-		"homepage": "http://github.com/jedateach"
-	}],
-	"extra": {
-		"installer-name": "silvershop-comparsion"
-	},
-	"require": {
-		"silvershop/core": "*",
-		"ajshort/silverstripe-gridfieldextensions": "*"
-	}
+    "name": "silvershop/comparison",
+    "description": "Submodule for SilverShop which allows you to compare products in a table.",
+    "type": "silverstripe-vendormodule",
+    "keywords": ["silverstripe", "ecommerce", "shop", "silvershop", "comparison", "compare", "products"],
+    "require" : {
+        "silvershop/core": "^3"
+    },
+    "authors": [{
+      "name": "SilverShop Contributors",
+      "homepage": "https://github.com/silvershop/silvershop-Comparison/graphs/contributors"
+    }],
+    "require-dev": {
+        "phpunit/phpunit": "^5.7",
+        "squizlabs/php_codesniffer": "^3.0"
+    },
+    "prefer-stable": false,
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.x-dev"
+        },
+        "expose": [
+            "javascript",
+            "images"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "SilverShop\\Comparison\\": "src/",
+            "SilverShop\\Comparison\\Tests\\": "tests/unit/"
+        }
+    }
 }

@@ -1,10 +1,10 @@
 ---
 Name: productcomparison
-After: 'shop/*'
+After: 'silvershop/*'
 ---
-Product:
+SilverShop\Page\Product:
   extensions:
-    - 'ProductFeaturesExtension'
+    - 'SilverStripe\Comparison\ProductFeaturesExtension'
 Product_Controller:
   extensions:
     - 'ProductControllerFeaturesExtension'
@@ -17,4 +17,4 @@ ProductCatalogAdmin:
 
 LeftAndMain:
   extra_requirements_javascript:
-    - shop_comparison/javascript/shop_comparsion_admin.js
+    - shop_comparison/javascript/shop_Comparison_admin.js

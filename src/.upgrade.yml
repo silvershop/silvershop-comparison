@@ -1,0 +1,8 @@
+mappings:
+  Feature: SilverShop\Comparison\Model\Feature
+  FeatureGroup: SilverShop\Comparison\Model\FeatureGroup
+  ProductFeatureValue: SilverShop\Comparison\Model\ProductFeatureValue
+  ProductComparisonPage: SilverShop\Comparison\Pagetypes\ProductComparisonPage
+  ProductComparisonPage_Controller: SilverShop\Comparison\Pagetypes\ProductComparisonPage_Controller
+  ProductFeaturesExtension: SilverShop\Comparison\Extension\ProductFeaturesExtension
+  ProductControllerFeaturesExtension: SilverShop\Comparison\Extension\ProductControllerFeaturesExtension
