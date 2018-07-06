@@ -2,7 +2,7 @@
 
 namespace SilverShop\Comparison\Pagetypes;
 
-use Page_Controller;
+use PageController;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Control\Director;

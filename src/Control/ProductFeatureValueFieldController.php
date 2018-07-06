@@ -4,31 +4,32 @@ namespace SilverShop\Comparison\Control;
 
 use SilverStripe\Security\SecurityToken;
 use SilverShop\Comparison\Model\Feature;
+use SilverStripe\Control\Controller;
 
-class ProductFeatureValueFieldController extends Controller {
-
+class ProductFeatureValueFieldController extends Controller
+{
     private static $allowed_actions = [
         'index'
     ];
 
     public function index($request) {
-        if(!SecurityToken::inst()->checkRequest($request)) {
+        if (!SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(403);
         }
 
         $id = $request->getVar('ID');
 
-        if(!$id) {
+        if (!$id) {
             return $this->httpError(400);
         }
 
         $feature = Feature::get()->byId($id);
 
-        if(!$feature) {
+        if (!$feature) {
             return $this->httpError(404);
         }
 
-        if(!$feature->canView()) {
+        if (!$feature->canView()) {
             return $this->httpError(403);
         }
 

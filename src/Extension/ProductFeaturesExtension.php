@@ -6,18 +6,21 @@ use SilverStripe\ORM\DataExtension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
 use Symbiote\GridFieldExtensions\GridFieldAddNewInlineButton;
 use Symbiote\GridFieldExtensions\GridFieldEditableColumns;
-use Symbiote\GridFieldExtensions\GridFieldSortableRows;
+use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 use SilverStripe\Forms\DropdownField;
 use SilverShop\Comparison\Model\Feature;
 use SilverStripe\Forms\HiddenField;
 use SilverShop\Comparison\Pagetypes\ProductComparisonPage;
+use SilverShop\Comparison\Model\ProductFeatureValue;
 
 class ProductFeaturesExtension extends DataExtension
 {
-    private static $has_many = [
-        'Features' => 'ProductFeatureValue'
+    private static $many_many = [
+        'Features' => ProductFeatureValue::class
     ];
 
     public function updateCMSFields(FieldList $fields) {
@@ -28,13 +31,13 @@ class ProductFeaturesExtension extends DataExtension
         );
 
         $grid->getConfig()
-            ->removeComponentsByType('GridFieldDataColumns')
-            ->removeComponentsByType('GridFieldAddNewButton')
+            ->removeComponentsByType(GridFieldDataColumns::class)
+            ->removeComponentsByType(GridFieldAddNewButton::class)
             ->addComponent(new GridFieldAddNewInlineButton())
             ->addComponent(new GridFieldEditableColumns())
-            ->addComponent(new GridFieldSortableRows());
+            ->addComponent(new GridFieldOrderableRows());
 
-        $grid->getConfig()->getComponentByType('GridFieldEditableColumns')->setDisplayFields(array(
+        $grid->getConfig()->getComponentByType(GridFieldEditableColumns::class)->setDisplayFields(array(
             'FeatureID'  => function($record, $column, $grid) {
                 $dropdown = new DropdownField($column, 'Feature', Feature::get()->map('ID', 'Title')->toArray());
                 $dropdown->addExtraClass('on_feature_select_fetch_value_field');

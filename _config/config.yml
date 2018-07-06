@@ -1,20 +1,16 @@
 ---
 Name: productcomparison
-After: 'silvershop/*'
 ---
 SilverShop\Page\Product:
   extensions:
-    - 'SilverStripe\Comparison\ProductFeaturesExtension'
-Product_Controller:
+    - 'SilverShop\Comparison\Extension\ProductFeaturesExtension'
+SilverShop\Page\ProductController:
   extensions:
-    - 'ProductControllerFeaturesExtension'
-ProductCatalogAdmin:
+    - 'SilverShop\Comparison\Extension\ProductControllerFeaturesExtension'
+SilverShop\Admin\ProductCatalogAdmin:
   managed_models:
-    - 'Product'
-    - 'ProductCategory'
-    - 'Feature'
-    - 'FeatureGroup'
-
-LeftAndMain:
+    - 'SilverShop\Comparison\Model\Feature'
+    - 'SilverShop\Comparison\Model\FeatureGroup'
+SilverStripe\Admin\LeftAndMain:
   extra_requirements_javascript:
-    - shop_comparison/javascript/shop_Comparison_admin.js
+    - 'silvershop/comparison:javascript/shop_comparison_admin.js'

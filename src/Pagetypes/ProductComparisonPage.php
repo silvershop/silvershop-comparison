@@ -19,7 +19,7 @@ class ProductComparisonPage extends Page
     /**
      * @var string
      */
-    private static $icon = 'silvershop/Comparison:images/compare.png';
+    private static $icon = 'silvershop/comparison:images/compare.png';
 
     /**
      * @param int $id
