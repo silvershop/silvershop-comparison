@@ -13,7 +13,7 @@
 		"installer-name": "silvershop-comparsion"
 	},
 	"require": {
-		"silvershop/core": "*",
-		"ajshort/silverstripe-gridfieldextensions": "*"
+		"silvershop/core": "^1 || ^2",
+		"symbiote/silverstripe-gridfieldextensions": "*"
 	}
 }
