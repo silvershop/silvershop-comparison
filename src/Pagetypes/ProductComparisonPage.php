@@ -3,10 +3,9 @@
 namespace SilverShop\Comparison\Pagetypes;
 
 use Page;
-use SilverShop\Pagetypes\Product;
-use SilverStripe\Core\Config\Config;
+use SilverShop\Page\Product;
 use SilverShop\Comparison\Model\Feature;
-use SilverShop\Comparison\Model\ProductFeatureValue;
+use SilverStripe\Control\Controller;
 
 class ProductComparisonPage extends Page
 {

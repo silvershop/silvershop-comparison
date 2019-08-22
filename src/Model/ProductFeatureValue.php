@@ -2,13 +2,13 @@
 
 namespace SilverShop\Comparison\Model;
 
+use SilverShop\Page\Product;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Control\Controller;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\LiteralField;
-use SilverShop\Pagetypes\Product;
 
 /**
  * Pivot table. Connects products with features, but also includes a value.
