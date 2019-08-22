@@ -2,6 +2,7 @@
 
 namespace SilverShop\Comparison\Extension;
 
+use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;

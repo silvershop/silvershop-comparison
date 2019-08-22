@@ -3,6 +3,8 @@
 namespace SilverShop\Comparison\Pagetypes;
 
 use PageController;
+use SilverShop\Comparison\Model\ProductFeatureValue;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Control\Director;

@@ -2,6 +2,7 @@
 
 namespace SilverShop\Comparison\Model;
 
+use SilverShop\Page\Product;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
@@ -9,9 +10,10 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\LiteralField;
-use Boolean;
-use DBFloat;
-use Varchar;
+use SilverStripe\ORM\FieldType\DBBoolean;
+use SilverStripe\ORM\FieldType\DBFloat;
+use SilverStripe\ORM\FieldType\DBVarchar;
+
 
 class Feature extends DataObject {
 
@@ -22,15 +24,15 @@ class Feature extends DataObject {
     ];
 
     private static $has_many = array(
-        "Products" => "Product_Feature"
+        "Products" => Product::class
     );
 
     private static $has_one = array(
-        "Group" => "FeatureGroup"
+        "Group" => FeatureGroup::class
     );
 
     private static $belongs_many_many = array(
-        "Product" => "Product"
+        "Product" => Product::class
     );
 
     private static $summary_fields = array(
@@ -59,6 +61,8 @@ class Feature extends DataObject {
                     ->setHasEmptyDefault(true)
             ,"Unit");
         }
+
+        $this->extend('updateCMSFields',$fields);
 
         return $fields;
     }
@@ -89,13 +93,14 @@ class Feature extends DataObject {
 
     public function getValueDBField($value) {
         $fields = array(
-            'Boolean' => new Boolean(),
+            'Boolean' => new DBBoolean(),
             'Number' => new DBFloat(),
-            'String' => new Varchar()
+            'String' => new DBVarchar()
         );
         $field =  $fields[$this->ValueType];
         $field->setValue($value);
 
         return $field;
     }
+
 }
