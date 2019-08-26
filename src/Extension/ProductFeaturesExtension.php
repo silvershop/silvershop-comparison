@@ -79,7 +79,7 @@ class ProductFeaturesExtension extends DataExtension
     }
 
     public function isCompared() {
-        $products = Controller::curr()->getSession()->get("ProductComparisons");
+        $products = Controller::curr()->getRequest()->getSession()->get("ProductComparisons");
 
         if ($products) {
             $products = explode(",", $products);

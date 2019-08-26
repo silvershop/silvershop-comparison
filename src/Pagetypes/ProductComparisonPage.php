@@ -71,7 +71,7 @@ class ProductComparisonPage extends Page
      * @return ProductComparisonPage
      */
     protected function setSelectionIDs(array $ids) {
-        Controller::curr()->getSession()->set("ProductComparisons", implode(',',$ids));
+        Controller::curr()->getRequest()->getSession()->set("ProductComparisons", implode(',',$ids));
 
         return $this;
     }
@@ -80,7 +80,7 @@ class ProductComparisonPage extends Page
      * @return array
      */
     protected function getSelectionIDs() {
-        if($ids = Controller::curr()->getSession()->get("ProductComparisons")) {
+        if($ids = Controller::curr()->getRequest()->getSession()->get("ProductComparisons")) {
             $ids = explode(',',$ids);
 
             return array_combine($ids, $ids);
@@ -109,7 +109,7 @@ class ProductComparisonPage extends Page
      */
     public function Features() {
          return Feature::get()
-            ->leftJoin("ProductFeatureValue","\"Feature\".\"ID\" = \"ProductFeatureValue\".\"FeatureID\"")
+            ->leftJoin("SilverShop_ProductFeatureValue","\"SilverShop_Feature\".\"ID\" = \"SilverShop_ProductFeatureValue\".\"FeatureID\"")
             ->filter("ProductID", $this->getSelectionIDs());
     }
 
