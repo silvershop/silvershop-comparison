@@ -16,15 +16,16 @@ class ProductControllerFeaturesExtension extends Extension
     public function GroupedFeatures($showungrouped = false)
     {
         $features = $this->owner->Features()
-            ->innerJoin("Feature","Feature.ID = ProductFeatureValue.FeatureID");
+            ->innerJoin("SilverShop_Feature","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID");
 
         //figure out feature groups
         $groupids = FeatureGroup::get()
-                ->innerJoin("Feature","Feature.GroupID = FeatureGroup.ID")
-                ->innerJoin("ProductFeatureValue","Feature.ID = ProductFeatureValue.FeatureID")
+                ->innerJoin("SilverShop_Feature","SilverShop_Feature.GroupID = SilverShop_FeatureGroup.ID")
+                ->innerJoin("SilverShop_ProductFeatureValue","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
                 ->filter("ProductID",$this->owner->ID)
                 ->getIDList();
-        //pack existin features into seperate lists
+
+        //pack existing features into seperate lists
         $result = new ArrayList();
 
         foreach($groupids as $groupid) {

@@ -19,6 +19,12 @@ Require the submodule via composer, from site root:
 composer require silvershop/comparison
 ```
 
-## License
+### Include in Product template:
+``` <% include ProductSpecifications %>```
 
+With grouping enabled:
+
+``` <% include ProductSpecifications Grouping=1 %>```
+
+## License
 See LICENCE
