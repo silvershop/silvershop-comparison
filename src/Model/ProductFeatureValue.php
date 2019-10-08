@@ -49,8 +49,8 @@ class ProductFeatureValue extends DataObject
             $fields->push($feature->getValueField());
         } else {
             $selected = Feature::get()
-                ->innerJoin("ProductFeatureValue","Feature.ID = ProductFeatureValue.FeatureID")
-                ->filter("ProductFeatureValue.ProductID", Controller::curr()->currentPageID())
+                ->innerJoin("SilverShop_ProductFeatureValue","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
+                ->filter("SilverShop_ProductFeatureValue.ProductID", Controller::curr()->currentPageID())
                 ->getIDList();
             $features = Feature::get()->filter("ID:not",$selected);
             $fields->push(DropdownField::create("FeatureID","Feature",$features->map()->toArray()));
