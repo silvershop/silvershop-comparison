@@ -3,6 +3,7 @@
 namespace SilverShop\Comparison\Model;
 
 use SilverShop\Page\Product;
+use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
@@ -44,15 +45,21 @@ class ProductFeatureValue extends DataObject
         $fields = new FieldList();
         $feature = $this->Feature();
 
+        $field = new TextField('ProductID','ProductID');
+        $fields->push($field);
+
         if ($feature->exists()) {
             $fields->push(ReadonlyField::create("FeatureTitle","Feature", $feature->Title));
             $fields->push($feature->getValueField());
         } else {
             $selected = Feature::get()
-                ->innerJoin("ProductFeatureValue","Feature.ID = ProductFeatureValue.FeatureID")
-                ->filter("ProductFeatureValue.ProductID", Controller::curr()->currentPageID())
+                ->innerJoin("SilverShop_ProductFeatureValue","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
+                ->filter("ProductID", Controller::curr()->currentPageID())
                 ->getIDList();
-            $features = Feature::get()->filter("ID:not",$selected);
+            $features = Feature::get();
+            if(!empty($selected)){
+                $features = $features->filter("ID:not",$selected);
+            }
             $fields->push(DropdownField::create("FeatureID","Feature",$features->map()->toArray()));
             $fields->push(LiteralField::create("creationnote", "<p class=\"message\">You can choose a value for this feature after saving.</p>"));
         }

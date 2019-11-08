@@ -24,7 +24,8 @@ class Feature extends DataObject {
     ];
 
     private static $has_many = array(
-        "Products" => Product::class
+        "Products" => Product::class,
+        'ProductFeatureValues' => ProductFeatureValue::class
     );
 
     private static $has_one = array(

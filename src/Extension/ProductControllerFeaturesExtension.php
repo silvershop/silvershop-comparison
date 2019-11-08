@@ -20,28 +20,29 @@ class ProductControllerFeaturesExtension extends Extension
 
         //figure out feature groups
         $groupids = FeatureGroup::get()
-                ->innerJoin("SilverShop_Feature","SilverShop_Feature.GroupID = SilverShop_FeatureGroup.ID")
-                ->innerJoin("SilverShop_ProductFeatureValue","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
-                ->filter("ProductID",$this->owner->ID)
-                ->getIDList();
+            ->innerJoin("SilverShop_Feature","SilverShop_Feature.GroupID = SilverShop_FeatureGroup.ID")
+            ->innerJoin("SilverShop_ProductFeatureValue","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
+            ->filter("ProductID",$this->owner->ID)
+            ->getIDList();
 
         //pack existing features into seperate lists
         $result = new ArrayList();
+        if(!empty($groupids)){
+            foreach($groupids as $groupid) {
+                $group = FeatureGroup::get()->byID($groupid);
+                $result->push(new ArrayData(array(
+                    'Group' => $group,
+                    'Children' => $features->filter("GroupID", $groupid)
+                )));
+            }
 
-        foreach($groupids as $groupid) {
-            $group = FeatureGroup::get()->byID($groupid);
-            $result->push(new ArrayData(array(
-                'Group' => $group,
-                'Children' => $features->filter("GroupID", $groupid)
-            )));
-        }
+            $ungrouped = $features->filter("GroupID:not", $groupids);
 
-        $ungrouped = $features->filter("GroupID:not", $groupids);
-
-        if ($ungrouped->exists() && $showungrouped) {
-            $result->push(new ArrayData(array(
-                'Children' => $ungrouped
-            )));
+            if ($ungrouped->exists() && $showungrouped) {
+                $result->push(new ArrayData(array(
+                    'Children' => $ungrouped
+                )));
+            }
         }
 
         return $result;

@@ -1,3 +1,6 @@
-SilverStripe/Control/Director:
+---
+Name: productcomparisonroutes
+---
+SilverStripe\Control\Director:
   rules:
-    'ProductFeatureValueFieldController': 'SilverShop/Comparison/Control/ProductFeatureValueFieldController'
+    'ProductFeatureValueFieldController': 'SilverShop\Comparison\Control\ProductFeatureValueFieldController'
