@@ -18,11 +18,13 @@ class ProductControllerFeaturesExtension extends Extension
         $features = $this->owner->Features()
             ->innerJoin("SilverShop_Feature","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID");
 
+        $featuresids = $features->getIDList();
+
         //figure out feature groups
         $groupids = FeatureGroup::get()
             ->innerJoin("SilverShop_Feature","SilverShop_Feature.GroupID = SilverShop_FeatureGroup.ID")
             ->innerJoin("SilverShop_ProductFeatureValue","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
-            ->filter("ProductID",$this->owner->ID)
+            ->where("SilverShop_ProductFeatureValue.ID IN (" . implode(',',$featuresids) .")" )
             ->getIDList();
 
         //pack existing features into seperate lists

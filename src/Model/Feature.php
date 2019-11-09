@@ -68,6 +68,13 @@ class Feature extends DataObject {
         return $fields;
     }
 
+    public function listTitle(){
+        if( $group=$this->Group() ){
+            return $group->Title . ' - ' . $this->Title;
+        }
+        return $this->Title;
+    }
+
     public function summaryFields() {
         $fields = parent::summaryFields();
 
