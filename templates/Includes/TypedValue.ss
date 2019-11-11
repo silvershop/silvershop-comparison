@@ -1,5 +1,5 @@
-<% if Feature %>
-	<% if Feature.ValueType = 'Boolean' || Feature.ValueType = 'Number' %>
+<% if $Feature %>
+	<% if $Feature.ValueType = 'Boolean' || $Feature.ValueType = 'Number' %>
 		$TypedValue.Nice $Feature.Unit
 	<% else %>
 		$TypedValue
