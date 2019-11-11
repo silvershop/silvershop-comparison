@@ -6,6 +6,7 @@ use Page;
 use SilverShop\Page\Product;
 use SilverShop\Comparison\Model\Feature;
 use SilverStripe\Control\Controller;
+use SilverStripe\ORM\DataList;
 
 class ProductComparisonPage extends Page
 {
@@ -19,6 +20,16 @@ class ProductComparisonPage extends Page
      * @var string
      */
     private static $icon = 'silvershop/comparison:images/compare.png';
+
+    /**
+     * @var string
+     */
+    private static $singular_name = 'Product Comparison Page';
+
+    /**
+     * @var string
+     */
+    private static $plural_name = 'Product Comparison Pages';
 
     /**
      * @param int $id
@@ -93,7 +104,10 @@ class ProductComparisonPage extends Page
      * @return DataList
      */
     public function Comp() {
-        return Product::get()->filter("ID", $this->getSelectionIDs());
+        $ids = $this->getSelectionIDs();
+        if($ids){
+            return Product::get()->filter("ID", $ids);
+        }
     }
 
 
