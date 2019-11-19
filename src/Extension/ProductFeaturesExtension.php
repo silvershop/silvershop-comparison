@@ -35,7 +35,7 @@ use XD\Basic\GridField\GridFieldConfig_Editable;
 
 class ProductFeaturesExtension extends DataExtension
 {
-    private static $many_many = [
+    private static $has_many = [
         'Features' => ProductFeatureValue::class
     ];
 

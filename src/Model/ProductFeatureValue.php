@@ -54,7 +54,7 @@ class ProductFeatureValue extends DataObject
         } else {
             $selected = Feature::get()
                 ->innerJoin("SilverShop_ProductFeatureValue","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
-                ->filter("ProductID", Controller::curr()->currentPageID())
+                ->filter("SilverShop_ProductFeatureValue.ProductID", Controller::curr()->currentPageID())
                 ->getIDList();
             $features = Feature::get();
             if(!empty($selected)){
