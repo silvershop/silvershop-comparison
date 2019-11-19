@@ -24,7 +24,8 @@ class Feature extends DataObject {
     ];
 
     private static $has_many = array(
-        "Products" => ProductFeatureValue::class
+        "Products" => Product::class,
+        'ProductFeatureValues' => ProductFeatureValue::class
     );
 
     private static $has_one = array(
@@ -65,6 +66,13 @@ class Feature extends DataObject {
         $this->extend('updateCMSFields',$fields);
 
         return $fields;
+    }
+
+    public function listTitle(){
+        if( $group=$this->Group() ){
+            return $group->Title . ' - ' . $this->Title;
+        }
+        return $this->Title;
     }
 
     public function summaryFields() {
