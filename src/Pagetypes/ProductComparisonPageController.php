@@ -103,7 +103,6 @@ class ProductComparisonPageController extends PageController
                 return $this->renderWith('CompareMessage_Success');
             }
 
-            return $this->response;
         }
 
         $this->redirect($this->Link());
