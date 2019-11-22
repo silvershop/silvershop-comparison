@@ -7,6 +7,7 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridFieldButtonRow;
 use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
+use SilverStripe\Forms\GridField\GridFieldFooter;
 use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\Forms\TextField;
@@ -31,21 +32,27 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
     {
         parent::__construct();
 
-        $displayFields = [
-            'FeatureID'  => function($record, $column, $grid) {
-                $dropdown = new DropdownField($column, 'Feature', Feature::get()->map('ID', 'listTitle')->toArray());
-                $dropdown->addExtraClass('on_feature_select_fetch_value_field');
-                return $dropdown;
-            },
-            'Value' => function($record, $column, $grid) {
-                if($record->FeatureID) {
-                    $field = $record->Feature()->getValueField();
-                    $field->setName($column);
 
-                    return $field;
+        $displayFields = [
+            'FeatureID'  => [
+                'title' => 'Feature',
+                'callback' => function($record, $column, $grid) {
+                    $dropdown = new DropdownField($column, 'Feature', Feature::get()->map('ID', 'listTitle')->toArray());
+                    $dropdown->addExtraClass('on_feature_select_fetch_value_field');
+                    return $dropdown;
                 }
-                return new HiddenField($column);
-            }
+            ],
+            'Value' => [
+                'title' => 'Value',
+                'callback' => function($record, $column, $grid) {
+                    if($record->FeatureID) {
+                        $field = $record->Feature()->getValueField();
+                        $field->setName($column);
+                        return $field;
+                    }
+                    return new HiddenField($column);
+                }
+            ]
         ];
 
         $this->addComponent($editableColumns = new GridFieldEditableColumns());
@@ -58,6 +65,7 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
         $this->addComponent(new GridFieldAddNewInlineButton('buttons-before-left'));
         $this->addComponent(new GridFieldToolbarHeader());
         $this->addComponent(new GridFieldTitleHeader());
+        $this->addComponent(new GridFieldFooter());
         $this->addComponent(new GridFieldDeleteAction());
         $this->extend('updateConfig');
     }

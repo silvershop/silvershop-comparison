@@ -7,6 +7,7 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridFieldButtonRow;
 use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
+use SilverStripe\Forms\GridField\GridFieldFooter;
 use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
 use SilverStripe\Forms\TextField;
 use Symbiote\GridFieldExtensions\GridFieldAddNewInlineButton;
@@ -54,6 +55,7 @@ class GridFieldConfig_FeatureGroup extends GridFieldConfig
         $this->addComponent(new GridFieldAddNewInlineButton('buttons-before-left'));
         $this->addComponent(new GridFieldToolbarHeader());
         $this->addComponent(new GridFieldTitleHeader());
+        $this->addComponent(new GridFieldFooter());
         $this->addComponent(new GridFieldDeleteAction());
         $this->extend('updateConfig');
     }
