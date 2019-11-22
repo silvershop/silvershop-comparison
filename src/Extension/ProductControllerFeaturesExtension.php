@@ -22,15 +22,20 @@ class ProductControllerFeaturesExtension extends Extension
 
         $featuresids = $features->getIDList();
 
-        //figure out feature groups
-        $groupids = FeatureGroup::get()
-            ->innerJoin("SilverShop_Feature","SilverShop_Feature.GroupID = SilverShop_FeatureGroup.ID")
-            ->innerJoin("SilverShop_ProductFeatureValue","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
-            ->where("SilverShop_ProductFeatureValue.ID IN (" . implode(',',$featuresids) .")" )
-            ->getIDList();
-
         // check sorting option
         $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
+
+        //figure out feature groups
+        $groups = FeatureGroup::get()
+            ->innerJoin("SilverShop_Feature","SilverShop_Feature.GroupID = SilverShop_FeatureGroup.ID")
+            ->innerJoin("SilverShop_ProductFeatureValue","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
+            ->where("SilverShop_ProductFeatureValue.ID IN (" . implode(',',$featuresids) .")" );
+
+        if( $sortByGroup ){
+            $groups = $groups->Sort('Title ASC');
+        }
+
+        $groupids = $groups->getIDList();
 
         //pack existing features into seperate lists
         $result = new ArrayList();
