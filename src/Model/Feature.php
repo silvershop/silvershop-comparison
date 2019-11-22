@@ -3,6 +3,7 @@
 namespace SilverShop\Comparison\Model;
 
 use SilverShop\Page\Product;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
@@ -17,10 +18,16 @@ use SilverStripe\ORM\FieldType\DBVarchar;
 
 class Feature extends DataObject {
 
+    use Configurable;
+
+    // if set to true, features are always sorted like they are within the FeatureGroup
+    private static $sort_features_by_group = false;
+
     private static $db = [
         'Title' => 'Varchar',
         'Unit' => 'Varchar',
-        'ValueType' => "Enum('Boolean,Number,String','String')"
+        'ValueType' => "Enum('Boolean,Number,String','String')",
+        'Sort' => 'Int'
     ];
 
     private static $has_many = array(
@@ -40,6 +47,8 @@ class Feature extends DataObject {
         "Title" => "Title",
         "Unit" => "Unit"
     );
+
+    private static $default_sort = 'Sort ASC'; // sorting with in group
 
     private static $table_name = 'SilverShop_Feature';
 
