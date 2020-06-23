@@ -41,10 +41,9 @@ class ProductFeaturesExtension extends DataExtension
             } else {
                 $features = $this->owner->Features();
             }
+            $grid = GridField::create("Features", "Features", $features, $config);
+            $fields->addFieldToTab("Root.Features",$grid);
         }
-
-        $grid = GridField::create("Features", "Features", $features, $config);
-        $fields->addFieldToTab("Root.Features",$grid);
 
         // quick add all from feature group
         $field = new DropdownField('QuickAddFeatureGroupID','Add all features from group',FeatureGroup::get()->map('ID','Title'));
