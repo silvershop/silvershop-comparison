@@ -31,18 +31,19 @@ class ProductFeaturesExtension extends DataExtension
     public function updateCMSFields(FieldList $fields) {
         $config = new GridFieldConfig_ProductFeatures();
 
-        $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
-        if( $sortByGroup ){
-            $features = $this->owner->Features()
-                ->leftJoin('SilverShop_Feature',"\"SilverShop_Feature\".\"ID\"=\"SilverShop_ProductFeatureValue\".\"FeatureID\"")
-                ->leftJoin('SilverShop_FeatureGroup',"\"SilverShop_FeatureGroup\".\"ID\"=\"SilverShop_Feature\".\"GroupID\"")
-                ->Sort("\"SilverShop_FeatureGroup\".\"Title\" ASC, \"SilverShop_Feature\".\"Sort\" ASC");
-        } else {
-            $features = $this->owner->Features();
+        if( $this->owner->exists() ) {
+            $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
+            if( $sortByGroup ){
+                $features = $this->owner->Features()
+                    ->leftJoin('SilverShop_Feature',"\"SilverShop_Feature\".\"ID\"=\"SilverShop_ProductFeatureValue\".\"FeatureID\"")
+                    ->leftJoin('SilverShop_FeatureGroup',"\"SilverShop_FeatureGroup\".\"ID\"=\"SilverShop_Feature\".\"GroupID\"")
+                    ->Sort("\"SilverShop_FeatureGroup\".\"Title\" ASC, \"SilverShop_Feature\".\"Sort\" ASC");
+            } else {
+                $features = $this->owner->Features();
+            }
+            $grid = GridField::create("Features", "Features", $features, $config);
+            $fields->addFieldToTab("Root.Features",$grid);
         }
-
-        $grid = GridField::create("Features", "Features", $features, $config);
-        $fields->addFieldToTab("Root.Features",$grid);
 
         // quick add all from feature group
         $field = new DropdownField('QuickAddFeatureGroupID','Add all features from group',FeatureGroup::get()->map('ID','Title'));
