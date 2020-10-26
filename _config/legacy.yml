@@ -1,0 +1,9 @@
+---
+Name: silvershop-comparison-legacy
+---
+# Mapping rules to map old model-classes to new ones.
+SilverStripe\ORM\DatabaseAdmin:
+  classname_value_remapping:
+    Feature: SilverShop\Comparison\Model\Feature
+    FeatureGroup: SilverShop\Comparison\Model\FeatureGroup
+    ProductFeatureValue: SilverShop\Comparison\Model\ProductFeatureValue
