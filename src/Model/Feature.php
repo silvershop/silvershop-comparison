@@ -15,7 +15,6 @@ use SilverStripe\ORM\FieldType\DBBoolean;
 use SilverStripe\ORM\FieldType\DBFloat;
 use SilverStripe\ORM\FieldType\DBVarchar;
 
-
 class Feature extends DataObject
 {
 
@@ -31,23 +30,23 @@ class Feature extends DataObject
         'Sort' => 'Int'
     ];
 
-    private static array $has_many = array(
+    private static array $has_many = [
         "Products" => Product::class,
         'ProductFeatureValues' => ProductFeatureValue::class
-    );
+    ];
 
-    private static array $has_one = array(
+    private static array $has_one = [
         "Group" => FeatureGroup::class
-    );
+    ];
 
-    private static array $belongs_many_many = array(
+    private static array $belongs_many_many = [
         "Product" => Product::class
-    );
+    ];
 
-    private static array $summary_fields = array(
+    private static array $summary_fields = [
         "Title" => "Title",
         "Unit" => "Unit"
-    );
+    ];
 
     private static string $default_sort = 'Sort ASC'; // sorting with in group
 
@@ -67,7 +66,7 @@ class Feature extends DataObject
 
         $groups = FeatureGroup::get();
 
-        if($groups->exists()) {
+        if ($groups->exists()) {
             $fields->insertAfter(
                 DropdownField::create("GroupID", "Group", $groups->map()->toArray())
                     ->setHasEmptyDefault(true),
@@ -82,7 +81,7 @@ class Feature extends DataObject
 
     public function listTitle(): string
     {
-        if($group=$this->Group() ) {
+        if ($group=$this->Group()) {
             return $group->Title . ' - ' . $this->Title;
         }
         return $this->Title;
@@ -92,7 +91,7 @@ class Feature extends DataObject
     {
         $fields = parent::summaryFields();
 
-        if(FeatureGroup::get()->exists()) {
+        if (FeatureGroup::get()->exists()) {
             $fields['Group.Title'] = 'Group';
         }
 
@@ -101,13 +100,13 @@ class Feature extends DataObject
 
     public function getValueField(): CheckboxField|NumericField|TextField|LiteralField
     {
-        $fields = array(
+        $fields = [
             'Boolean' => CheckboxField::create("Value"),
             'Number' => NumericField::create("Value"),
             'String' => TextField::create("Value")
-        );
+        ];
 
-        if(isset($fields[$this->ValueType])) {
+        if (isset($fields[$this->ValueType])) {
             return $fields[$this->ValueType];
         } else {
             return new LiteralField("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
@@ -116,15 +115,14 @@ class Feature extends DataObject
 
     public function getValueDBField($value): DBBoolean|DBFloat|DBVarchar
     {
-        $fields = array(
+        $fields = [
             'Boolean' => new DBBoolean(),
             'Number' => new DBFloat(),
             'String' => new DBVarchar()
-        );
+        ];
         $field =  $fields[$this->ValueType];
         $field->setValue($value);
 
         return $field;
     }
-
 }

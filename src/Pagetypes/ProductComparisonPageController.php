@@ -35,27 +35,27 @@ class ProductComparisonPageController extends PageController
      */
     public function getComparedTableList(): ?ArrayList
     {
-        if($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')) {
+        if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')) {
             $output = new ArrayList();
             $products = $this->Comp();
             $previousHadProduct = true;
 
-            for($i = 1; $i <= $max; $i++) {
+            for ($i = 1; $i <= $max; $i++) {
                 $product = $products->limit(1, $i - 1)->First();
 
                 $output->push(
                     new ArrayData(
-                        array(
+                        [
                         'First' => ($i == 1),
                         'Last' => ($i == $max),
                         'Product' => $product,
                         'IsFirstNonProduct' => (!$product && $previousHadProduct)
-                        )
+                        ]
                     )
                 );
 
 
-                if(!$product) {
+                if (!$product) {
                     $previousHadProduct = false;
                 }
             }
@@ -71,7 +71,7 @@ class ProductComparisonPageController extends PageController
     {
         $output = new Arraylist();
 
-        foreach($this->Comp() as $comp){
+        foreach ($this->Comp() as $comp) {
             $output->push(
                 ProductFeatureValue::get()
                     ->filter("ProductID", $comp->ID)
@@ -82,12 +82,12 @@ class ProductComparisonPageController extends PageController
 
         if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')) {
             if ($pad && $output->count() < $max) {
-                for($i = $out->count(); $i < $max; $i++) {
+                for ($i = $out->count(); $i < $max; $i++) {
                     $out->push(
                         new ArrayData(
-                            array(
+                            [
                             'Padded' => true
-                            )
+                            ]
                         )
                     );
                 }
@@ -102,22 +102,21 @@ class ProductComparisonPageController extends PageController
         $result = $this->addToSelection($request->param('ID'));
 
         if (Director::is_ajax()) {
-            if($result === null) {
+            if ($result === null) {
                 $this->response->setStatusCode(404);
 
                 return $this->renderWith('CompareMessage_Missing');
-            } else if($result === false) {
+            } elseif ($result === false) {
                 return $this->customise(
                     new ArrayData(
-                        array(
+                        [
                         'Count' => Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')
-                        )
+                        ]
                     )
                 )->renderWith('CompareMessage_Exceeded');
             } else {
                 return $this->renderWith('CompareMessage_Success');
             }
-
         }
 
         $this->redirect($this->Link());
@@ -128,7 +127,7 @@ class ProductComparisonPageController extends PageController
         $result = $this->removeFromSelection($request->param('ID'));
 
         if (Director::is_ajax()) {
-            if($result === null) {
+            if ($result === null) {
                 $this->response->setStatusCode(404);
             }
 
@@ -137,5 +136,4 @@ class ProductComparisonPageController extends PageController
 
         $this->redirect($this->Link());
     }
-
 }

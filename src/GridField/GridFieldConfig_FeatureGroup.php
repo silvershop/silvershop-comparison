@@ -40,15 +40,15 @@ class GridFieldConfig_FeatureGroup extends GridFieldConfig
                 'title' => 'Unit',
                 'field' => TextField::class,
             ],
-            'ValueType' => function($record, $column, $grid) {
-                return DropdownField::create($column,"Value Type", singleton(Feature::class)->dbObject('ValueType')->enumValues());
+            'ValueType' => function ($record, $column, $grid) {
+                return DropdownField::create($column, "Value Type", singleton(Feature::class)->dbObject('ValueType')->enumValues());
             }
         ];
 
         $this->addComponent($editableColumns = new GridFieldEditableColumns());
         $editableColumns->setDisplayFields($displayFields);
         $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
-        if( $sortByGroup ) {
+        if ($sortByGroup) {
             $this->addComponent(new GridFieldOrderableRows());
         }
         $this->addComponent(new GridFieldButtonRow('before'));

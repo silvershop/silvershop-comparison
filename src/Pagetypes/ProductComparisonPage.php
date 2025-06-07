@@ -29,7 +29,7 @@ class ProductComparisonPage extends Page
             $all[$id] = $id;
 
             if ($max = static::config()->get('max_product_Comparisons')) {
-                if(count($all) > $max) {
+                if (count($all) > $max) {
                     return false;
                 }
             }
@@ -44,10 +44,10 @@ class ProductComparisonPage extends Page
 
     public function removeFromSelection(int $id): ?bool
     {
-        if($product = Product::get()->byID($id)) {
+        if ($product = Product::get()->byID($id)) {
             $all = $this->getSelectionIDs();
 
-            if(isset($all[$id])) {
+            if (isset($all[$id])) {
                 unset($all[$id]);
             }
 
@@ -76,13 +76,13 @@ class ProductComparisonPage extends Page
      */
     protected function getSelectionIDs()
     {
-        if($ids = Controller::curr()->getRequest()->getSession()->get("ProductComparisons")) {
+        if ($ids = Controller::curr()->getRequest()->getSession()->get("ProductComparisons")) {
             $ids = explode(',', $ids);
 
             return array_combine($ids, $ids);
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -91,7 +91,7 @@ class ProductComparisonPage extends Page
     public function Comp()
     {
         $ids = $this->getSelectionIDs();
-        if($ids) {
+        if ($ids) {
             return Product::get()->filter("ID", $ids);
         }
     }
@@ -114,5 +114,4 @@ class ProductComparisonPage extends Page
              ->leftJoin("SilverShop_ProductFeatureValue", "\"SilverShop_Feature\".\"ID\" = \"SilverShop_ProductFeatureValue\".\"FeatureID\"")
              ->filter("ProductID", $this->getSelectionIDs());
     }
-
 }

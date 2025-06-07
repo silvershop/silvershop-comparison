@@ -29,11 +29,11 @@ class ProductFeatureValue extends DataObject
         "Feature" => Feature::class
     ];
 
-    private static array $summary_fields  =  array(
+    private static array $summary_fields  =  [
         "Feature.Title" => "Feature",
         "Value" => "Value",
         "Feature.Unit" => "Unit"
-    );
+    ];
 
     private static string $singular_name = "Feature";
 
@@ -58,7 +58,7 @@ class ProductFeatureValue extends DataObject
                 ->filter("SilverShop_ProductFeatureValue.ProductID", Controller::curr()->currentPageID())
                 ->getIDList();
             $features = Feature::get();
-            if(!empty($selected)) {
+            if (!empty($selected)) {
                 $features = $features->filter("ID:not", $selected);
             }
             $fields->push(DropdownField::create("FeatureID", "Feature", $features->map()->toArray()));

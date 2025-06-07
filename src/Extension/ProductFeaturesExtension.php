@@ -32,9 +32,9 @@ class ProductFeaturesExtension extends DataExtension
     {
         $config = new GridFieldConfig_ProductFeatures();
 
-        if($this->owner->exists() ) {
+        if ($this->owner->exists()) {
             $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
-            if($sortByGroup ) {
+            if ($sortByGroup) {
                 $features = $this->owner->Features()
                     ->leftJoin('SilverShop_Feature', "\"SilverShop_Feature\".\"ID\"=\"SilverShop_ProductFeatureValue\".\"FeatureID\"")
                     ->leftJoin('SilverShop_FeatureGroup', "\"SilverShop_FeatureGroup\".\"ID\"=\"SilverShop_Feature\".\"GroupID\"")
@@ -65,14 +65,14 @@ class ProductFeaturesExtension extends DataExtension
     public function CompareAddLink(): ?string
     {
         if ($page = ProductComparisonPage::get()->first()) {
-            return $page->Link("add/". $this->owner->ID);
+            return $page->Link("add/" . $this->owner->ID);
         }
     }
 
     public function CompareRemoveLink(): ?string
     {
         if ($page = ProductComparisonPage::get()->first()) {
-            return $page->Link("remove/". $this->owner->ID);
+            return $page->Link("remove/" . $this->owner->ID);
         }
     }
 
@@ -91,13 +91,13 @@ class ProductFeaturesExtension extends DataExtension
 
     public function addAllFeaturesFromGroup($groupid): void
     {
-        if($group = FeatureGroup::get()->byID($groupid) ) {
+        if ($group = FeatureGroup::get()->byID($groupid)) {
             $features = $group->Features();
             $sort = $this->owner->Features()->max('Sort'); // not correct way
 
-            foreach( $features as $feature ){
+            foreach ($features as $feature) {
                 // add empty ProductFeatureValue if not present
-                if(!$this->owner->Features()->filter('FeatureID', $feature->ID)->first() ) {
+                if (!$this->owner->Features()->filter('FeatureID', $feature->ID)->first()) {
                     // does not exist yet, so add
                     $productFeatureValue = ProductFeatureValue::create();
                     $productFeatureValue->FeatureID = $feature->ID;
@@ -119,9 +119,8 @@ class ProductFeaturesExtension extends DataExtension
     public function onAfterWrite(): void
     {
         parent::onAfterWrite();
-        if(isset($_POST['QuickAddFeatureGroupID']) && $groupid=(int) $_POST['QuickAddFeatureGroupID'] ) {
+        if (isset($_POST['QuickAddFeatureGroupID']) && $groupid=(int) $_POST['QuickAddFeatureGroupID']) {
             $this->addAllFeaturesFromGroup($groupid);
         }
     }
-
 }

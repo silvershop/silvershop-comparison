@@ -35,7 +35,7 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
         $displayFields = [
             'FeatureID'  => [
                 'title' => 'Feature',
-                'callback' => function($record, $column, $grid): DropdownField {
+                'callback' => function ($record, $column, $grid): DropdownField {
                     $dropdown = new DropdownField($column, 'Feature', Feature::get()->map('ID', 'listTitle')->toArray());
                     $dropdown->addExtraClass('on_feature_select_fetch_value_field');
                     return $dropdown;
@@ -43,8 +43,8 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
             ],
             'Value' => [
                 'title' => 'Value',
-                'callback' => function($record, $column, $grid) {
-                    if($record->FeatureID) {
+                'callback' => function ($record, $column, $grid) {
+                    if ($record->FeatureID) {
                         $field = $record->Feature()->getValueField();
                         $field->setName($column);
                         return $field;
@@ -57,7 +57,7 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
         $this->addComponent($editableColumns = new GridFieldEditableColumns());
         $editableColumns->setDisplayFields($displayFields);
         $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
-        if( !$sortByGroup ) {
+        if (!$sortByGroup) {
             $this->addComponent(new GridFieldOrderableRows());
         }
         $this->addComponent(new GridFieldButtonRow('before'));

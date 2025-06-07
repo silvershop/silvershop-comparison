@@ -12,7 +12,8 @@ class ProductFeatureValueFieldController extends Controller
         'index'
     ];
 
-    public function index($request) {
+    public function index($request)
+    {
         if (!SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(403);
         }

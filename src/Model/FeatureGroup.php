@@ -33,6 +33,4 @@ class FeatureGroup extends DataObject
         $fields->addFieldToTab('Root.Main', $field);
         return $fields;
     }
-
-
 }
