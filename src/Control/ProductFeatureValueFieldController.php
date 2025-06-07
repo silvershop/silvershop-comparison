@@ -8,7 +8,7 @@ use SilverStripe\Control\Controller;
 
 class ProductFeatureValueFieldController extends Controller
 {
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'index'
     ];
 

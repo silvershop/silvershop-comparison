@@ -15,7 +15,7 @@ class ProductControllerFeaturesExtension extends Extension
     /**
      * Override features list with grouping.
      */
-    public function GroupedFeatures($showungrouped = false)
+    public function GroupedFeatures($showungrouped = false): ArrayList
     {
         $features = $this->owner->Features()
             ->innerJoin("SilverShop_Feature","SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID");

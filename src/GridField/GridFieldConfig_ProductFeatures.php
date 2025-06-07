@@ -10,7 +10,6 @@ use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 use SilverStripe\Forms\GridField\GridFieldFooter;
 use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
 use SilverStripe\Forms\HiddenField;
-use SilverStripe\Forms\TextField;
 use Symbiote\GridFieldExtensions\GridFieldAddNewInlineButton;
 use Symbiote\GridFieldExtensions\GridFieldEditableColumns;
 use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
@@ -36,7 +35,7 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
         $displayFields = [
             'FeatureID'  => [
                 'title' => 'Feature',
-                'callback' => function($record, $column, $grid) {
+                'callback' => function($record, $column, $grid): DropdownField {
                     $dropdown = new DropdownField($column, 'Feature', Feature::get()->map('ID', 'listTitle')->toArray());
                     $dropdown->addExtraClass('on_feature_select_fetch_value_field');
                     return $dropdown;

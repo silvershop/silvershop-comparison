@@ -12,31 +12,18 @@ class ProductComparisonPage extends Page
 {
     /**
      * @config
-     * @var int
+     * @var    int
      */
     private static $max_product_Comparisons;
 
-    /**
-     * @var string
-     */
-    private static $icon = 'silvershop/comparison:images/compare.png';
+    private static string $icon = 'silvershop/comparison:images/compare.png';
 
-    /**
-     * @var string
-     */
-    private static $singular_name = 'Product Comparison Page';
+    private static string $singular_name = 'Product Comparison Page';
 
-    /**
-     * @var string
-     */
-    private static $plural_name = 'Product Comparison Pages';
+    private static string $plural_name = 'Product Comparison Pages';
 
-    /**
-     * @param int $id
-     *
-     * @return bool|null
-     */
-    public function addToSelection($id) {
+    public function addToSelection(int $id): ?bool
+    {
         if ($product = Product::get()->byID($id)) {
             $all = $this->getSelectionIDs();
             $all[$id] = $id;
@@ -55,12 +42,8 @@ class ProductComparisonPage extends Page
         return null;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return bool|null
-     */
-    public function removeFromSelection($id) {
+    public function removeFromSelection(int $id): ?bool
+    {
         if($product = Product::get()->byID($id)) {
             $all = $this->getSelectionIDs();
 
@@ -81,8 +64,9 @@ class ProductComparisonPage extends Page
      *
      * @return ProductComparisonPage
      */
-    protected function setSelectionIDs(array $ids) {
-        Controller::curr()->getRequest()->getSession()->set("ProductComparisons", implode(',',$ids));
+    protected function setSelectionIDs(array $ids)
+    {
+        Controller::curr()->getRequest()->getSession()->set("ProductComparisons", implode(',', $ids));
 
         return $this;
     }
@@ -90,9 +74,10 @@ class ProductComparisonPage extends Page
     /**
      * @return array
      */
-    protected function getSelectionIDs() {
+    protected function getSelectionIDs()
+    {
         if($ids = Controller::curr()->getRequest()->getSession()->get("ProductComparisons")) {
-            $ids = explode(',',$ids);
+            $ids = explode(',', $ids);
 
             return array_combine($ids, $ids);
         }
@@ -103,9 +88,10 @@ class ProductComparisonPage extends Page
     /**
      * @return DataList
      */
-    public function Comp() {
+    public function Comp()
+    {
         $ids = $this->getSelectionIDs();
-        if($ids){
+        if($ids) {
             return Product::get()->filter("ID", $ids);
         }
     }
@@ -114,17 +100,19 @@ class ProductComparisonPage extends Page
     /**
      * @return int
      */
-    public function getProductCount() {
+    public function getProductCount()
+    {
         return count($this->getSelectionIDs());
     }
 
     /**
      * @return DataList
      */
-    public function Features() {
+    public function Features()
+    {
          return Feature::get()
-            ->leftJoin("SilverShop_ProductFeatureValue","\"SilverShop_Feature\".\"ID\" = \"SilverShop_ProductFeatureValue\".\"FeatureID\"")
-            ->filter("ProductID", $this->getSelectionIDs());
+             ->leftJoin("SilverShop_ProductFeatureValue", "\"SilverShop_Feature\".\"ID\" = \"SilverShop_ProductFeatureValue\".\"FeatureID\"")
+             ->filter("ProductID", $this->getSelectionIDs());
     }
 
 }
