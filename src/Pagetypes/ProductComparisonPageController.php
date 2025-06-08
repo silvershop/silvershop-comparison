@@ -4,12 +4,10 @@ namespace SilverShop\Comparison\Pagetypes;
 
 use PageController;
 use SilverShop\Comparison\Model\ProductFeatureValue;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
-use SilverStripe\Control\Director;
-use SilverStripe\ORM\FieldType\DBHTMLText;
-use SilverStripe\View\ViewableData_Customised;
 
 class ProductComparisonPageController extends PageController
 {
@@ -36,7 +34,7 @@ class ProductComparisonPageController extends PageController
     public function getComparedTableList(): ?ArrayList
     {
         if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')) {
-            $output = new ArrayList();
+            $output = ArrayList::create();
             $products = $this->Comp();
             $previousHadProduct = true;
 
@@ -44,12 +42,12 @@ class ProductComparisonPageController extends PageController
                 $product = $products->limit(1, $i - 1)->First();
 
                 $output->push(
-                    new ArrayData(
+                    ArrayData::create(
                         [
-                        'First' => ($i == 1),
-                        'Last' => ($i == $max),
-                        'Product' => $product,
-                        'IsFirstNonProduct' => (!$product && $previousHadProduct)
+                            'First' => ($i == 1),
+                            'Last' => ($i == $max),
+                            'Product' => $product,
+                            'IsFirstNonProduct' => (!$product && $previousHadProduct)
                         ]
                     )
                 );
@@ -69,7 +67,7 @@ class ProductComparisonPageController extends PageController
 
     public function ValuesForFeature($id, $pad = false): ArrayList
     {
-        $output = new Arraylist();
+        $output = ArrayList::create();
 
         foreach ($this->Comp() as $comp) {
             $output->push(
@@ -82,11 +80,11 @@ class ProductComparisonPageController extends PageController
 
         if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')) {
             if ($pad && $output->count() < $max) {
-                for ($i = $out->count(); $i < $max; $i++) {
-                    $out->push(
-                        new ArrayData(
+                for ($i = $output->count(); $i < $max; $i++) {
+                    $output->push(
+                        ArrayData::create(
                             [
-                            'Padded' => true
+                                'Padded' => true
                             ]
                         )
                     );
@@ -94,7 +92,7 @@ class ProductComparisonPageController extends PageController
             }
         }
 
-        return $out;
+        return $output;
     }
 
     public function add($request)
@@ -108,9 +106,9 @@ class ProductComparisonPageController extends PageController
                 return $this->renderWith('CompareMessage_Missing');
             } elseif ($result === false) {
                 return $this->customise(
-                    new ArrayData(
+                    ArrayData::create(
                         [
-                        'Count' => Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')
+                            'Count' => Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')
                         ]
                     )
                 )->renderWith('CompareMessage_Exceeded');

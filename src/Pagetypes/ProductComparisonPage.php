@@ -3,8 +3,8 @@
 namespace SilverShop\Comparison\Pagetypes;
 
 use Page;
-use SilverShop\Page\Product;
 use SilverShop\Comparison\Model\Feature;
+use SilverShop\Page\Product;
 use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataList;
 
@@ -21,6 +21,8 @@ class ProductComparisonPage extends Page
     private static string $singular_name = 'Product Comparison Page';
 
     private static string $plural_name = 'Product Comparison Pages';
+
+    private static string $table_name = 'SilverShop_ProductComparisonPage';
 
     public function addToSelection(int $id): ?bool
     {
@@ -59,12 +61,7 @@ class ProductComparisonPage extends Page
         return null;
     }
 
-    /**
-     * @param array $ids
-     *
-     * @return ProductComparisonPage
-     */
-    protected function setSelectionIDs(array $ids)
+    protected function setSelectionIDs(array $ids): static
     {
         Controller::curr()->getRequest()->getSession()->set("ProductComparisons", implode(',', $ids));
 
@@ -74,7 +71,7 @@ class ProductComparisonPage extends Page
     /**
      * @return array
      */
-    protected function getSelectionIDs()
+    protected function getSelectionIDs(): array
     {
         if ($ids = Controller::curr()->getRequest()->getSession()->get("ProductComparisons")) {
             $ids = explode(',', $ids);
@@ -85,30 +82,21 @@ class ProductComparisonPage extends Page
         return [];
     }
 
-    /**
-     * @return DataList
-     */
-    public function Comp()
+    public function Comp(): ?DataList
     {
         $ids = $this->getSelectionIDs();
         if ($ids) {
             return Product::get()->filter("ID", $ids);
         }
+        return null;
     }
 
-
-    /**
-     * @return int
-     */
-    public function getProductCount()
+    public function getProductCount(): int
     {
         return count($this->getSelectionIDs());
     }
 
-    /**
-     * @return DataList
-     */
-    public function Features()
+    public function Features(): DataList
     {
          return Feature::get()
              ->leftJoin("SilverShop_ProductFeatureValue", "\"SilverShop_Feature\".\"ID\" = \"SilverShop_ProductFeatureValue\".\"FeatureID\"")

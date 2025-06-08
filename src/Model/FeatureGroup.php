@@ -6,7 +6,12 @@ use SilverShop\Comparison\GridField\GridFieldConfig_FeatureGroup;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\HasManyList;
 
+/**
+ * @property string $Title
+ * @method   HasManyList<Feature> Features()
+ */
 class FeatureGroup extends DataObject
 {
     private static array $db = [
@@ -28,8 +33,8 @@ class FeatureGroup extends DataObject
     {
         $fields = parent::getCMSFields();
         $fields->removeByName('Features');
-        $config = new GridFieldConfig_FeatureGroup();
-        $field = new GridField('Features', 'Features', $this->owner->Features(), $config);
+        $config = GridFieldConfig_FeatureGroup::create();
+        $field = GridField::create('Features', 'Features', $this->owner->Features(), $config);
         $fields->addFieldToTab('Root.Main', $field);
         return $fields;
     }

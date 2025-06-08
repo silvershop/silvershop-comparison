@@ -3,16 +3,26 @@
 namespace SilverShop\Comparison\Model;
 
 use SilverShop\Page\Product;
-use SilverStripe\Forms\TextField;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Control\Controller;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBBoolean;
+use SilverStripe\ORM\FieldType\DBFloat;
+use SilverStripe\ORM\FieldType\DBVarchar;
 
 /**
  * Pivot table. Connects products with features, but also includes a value.
+ *
+ * @property ?string $Value
+ * @property int $Sort
+ * @property int $ProductID
+ * @property int $FeatureID
+ * @method   Product Product()
+ * @method   Feature Feature()
  */
 class ProductFeatureValue extends DataObject
 {
@@ -43,10 +53,10 @@ class ProductFeatureValue extends DataObject
 
     public function getCMSFields(): FieldList
     {
-        $fields = new FieldList();
+        $fields = FieldList::create();
         $feature = $this->Feature();
 
-        $field = new TextField('ProductID', 'ProductID');
+        $field = TextField::create('ProductID', 'ProductID');
         $fields->push($field);
 
         if ($feature->exists()) {
@@ -73,7 +83,7 @@ class ProductFeatureValue extends DataObject
         return $this->Feature()->Title;
     }
 
-    public function TypedValue()
+    public function TypedValue(): DBBoolean|DBFloat|DBVarchar
     {
         return $this->Feature()->getValueDBField($this->Value);
     }

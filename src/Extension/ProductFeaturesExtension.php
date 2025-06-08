@@ -5,24 +5,26 @@ namespace SilverShop\Comparison\Extension;
 use SilverShop\Comparison\GridField\GridFieldConfig_ProductFeatures;
 use SilverShop\Comparison\Model\Feature;
 use SilverShop\Comparison\Model\FeatureGroup;
+use SilverShop\Comparison\Model\ProductFeatureValue;
+use SilverShop\Comparison\Pagetypes\ProductComparisonPage;
+use SilverShop\Page\Product;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
-use SilverStripe\Forms\DropdownField;
-use SilverShop\Comparison\Pagetypes\ProductComparisonPage;
-use SilverShop\Comparison\Model\ProductFeatureValue;
+use SilverStripe\ORM\HasManyList;
 
 /**
  * Class ProductFeaturesExtension
  *
  * @package SilverShop\Comparison\Extension
  *
- * @method ManyManyList Features
+ * @method  HasManyList<ProductFeatureValue> Features()
+ * @extends Extension<(Product & static)>
  */
-
-class ProductFeaturesExtension extends DataExtension
+class ProductFeaturesExtension extends Extension
 {
     private static array $has_many = [
         'Features' => ProductFeatureValue::class
@@ -30,7 +32,7 @@ class ProductFeaturesExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields): void
     {
-        $config = new GridFieldConfig_ProductFeatures();
+        $config = GridFieldConfig_ProductFeatures::create();
 
         if ($this->owner->exists()) {
             $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
@@ -47,13 +49,13 @@ class ProductFeaturesExtension extends DataExtension
         }
 
         // quick add all from feature group
-        $field = new DropdownField('QuickAddFeatureGroupID', 'Add all features from group', FeatureGroup::get()->map('ID', 'Title'));
+        $field = DropdownField::create('QuickAddFeatureGroupID', 'Add all features from group', FeatureGroup::get()->map('ID', 'Title'));
         $field->setEmptyString('-');
         $field->setDescription('After save, all features of selected group will be added to the product');
         $fields->addFieldToTab('Root.Features', $field);
     }
 
-    public function CompareLink()
+    public function CompareLink(): ?string
     {
         if ($this->isCompared()) {
             return $this->CompareRemoveLink();
@@ -67,6 +69,7 @@ class ProductFeaturesExtension extends DataExtension
         if ($page = ProductComparisonPage::get()->first()) {
             return $page->Link("add/" . $this->owner->ID);
         }
+        return null;
     }
 
     public function CompareRemoveLink(): ?string
@@ -74,6 +77,7 @@ class ProductFeaturesExtension extends DataExtension
         if ($page = ProductComparisonPage::get()->first()) {
             return $page->Link("remove/" . $this->owner->ID);
         }
+        return null;
     }
 
     public function isCompared(): bool

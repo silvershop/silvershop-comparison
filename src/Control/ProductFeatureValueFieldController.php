@@ -2,9 +2,9 @@
 
 namespace SilverShop\Comparison\Control;
 
-use SilverStripe\Security\SecurityToken;
 use SilverShop\Comparison\Model\Feature;
 use SilverStripe\Control\Controller;
+use SilverStripe\Security\SecurityToken;
 
 class ProductFeatureValueFieldController extends Controller
 {

@@ -3,12 +3,16 @@
 namespace SilverShop\Comparison\Extension;
 
 use SilverShop\Comparison\Model\Feature;
+use SilverShop\Comparison\Model\FeatureGroup;
+use SilverShop\Page\ProductController;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
-use SilverShop\Comparison\Model\FeatureGroup;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 
+/**
+ * @extends Extension<ProductController&static>
+ */
 class ProductControllerFeaturesExtension extends Extension
 {
     /**
@@ -37,7 +41,7 @@ class ProductControllerFeaturesExtension extends Extension
         $groupids = $groups->getIDList();
 
         //pack existing features into seperate lists
-        $result = new ArrayList();
+        $result = ArrayList::create();
         if (!empty($groupids)) {
             foreach ($groupids as $groupid) {
                 $group = FeatureGroup::get()->byID($groupid);
@@ -48,20 +52,26 @@ class ProductControllerFeaturesExtension extends Extension
                     // sort on order at product level, default
                     $children = $features->filter("GroupID", $groupid);
                 }
-                $result->push(new ArrayData(
-                    [
-                        'Group' => $group,
-                        'Children' => $children
-                    ]
-                ));
+                $result->push(
+                    ArrayData::create(
+                        [
+                            'Group' => $group,
+                            'Children' => $children
+                        ]
+                    )
+                );
             }
 
             if ($showungrouped) {
                 $ungrouped = $features->filter("GroupID:not", $groupids);
                 if ($ungrouped->exists() && $showungrouped) {
-                    $result->push(new ArrayData([
-                        'Children' => $ungrouped
-                    ]));
+                    $result->push(
+                        ArrayData::create(
+                            [
+                                'Children' => $ungrouped
+                            ]
+                        )
+                    );
                 }
             }
         }

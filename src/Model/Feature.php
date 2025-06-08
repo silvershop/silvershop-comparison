@@ -4,17 +4,30 @@ namespace SilverShop\Comparison\Model;
 
 use SilverShop\Page\Product;
 use SilverStripe\Core\Config\Configurable;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBBoolean;
 use SilverStripe\ORM\FieldType\DBFloat;
 use SilverStripe\ORM\FieldType\DBVarchar;
+use SilverStripe\ORM\HasManyList;
+use SilverStripe\ORM\ManyManyList;
 
+/**
+ * @property string $Title
+ * @property ?string $Unit
+ * @property ?string $ValueType
+ * @property int $Sort
+ * @property int $GroupID
+ * @method   FeatureGroup Group()
+ * @method   HasManyList<Product> Products()
+ * @method   HasManyList<ProductFeatureValue> ProductFeatureValues()
+ * @method   ManyManyList<Product> Product()
+ */
 class Feature extends DataObject
 {
 
@@ -58,19 +71,23 @@ class Feature extends DataObject
 
     public function getCMSFields(): FieldList
     {
-        $fields = new FieldList(
+        $fields = FieldList::create(
             TextField::create("Title"),
             TextField::create("Unit"),
-            DropdownField::create("ValueType", "Value Type", $this->dbObject('ValueType')->enumValues())
+            DropdownField::create(
+                "ValueType",
+                "Value Type",
+                $this->dbObject('ValueType')->enumValues()
+            )
         );
 
         $groups = FeatureGroup::get();
 
         if ($groups->exists()) {
             $fields->insertAfter(
+                "Unit",
                 DropdownField::create("GroupID", "Group", $groups->map()->toArray())
-                    ->setHasEmptyDefault(true),
-                "Unit"
+                    ->setHasEmptyDefault(true)
             );
         }
 
@@ -81,8 +98,8 @@ class Feature extends DataObject
 
     public function listTitle(): string
     {
-        if ($group=$this->Group()) {
-            return $group->Title . ' - ' . $this->Title;
+        if ($this->Group()->exists()) {
+            return $this->Group()->Title . ' - ' . $this->Title;
         }
         return $this->Title;
     }
@@ -109,16 +126,16 @@ class Feature extends DataObject
         if (isset($fields[$this->ValueType])) {
             return $fields[$this->ValueType];
         } else {
-            return new LiteralField("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
+            return LiteralField::create("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
         }
     }
 
     public function getValueDBField($value): DBBoolean|DBFloat|DBVarchar
     {
         $fields = [
-            'Boolean' => new DBBoolean(),
-            'Number' => new DBFloat(),
-            'String' => new DBVarchar()
+            'Boolean' => DBBoolean::create(),
+            'Number' => DBFloat::create(),
+            'String' => DBVarchar::create()
         ];
         $field =  $fields[$this->ValueType];
         $field->setValue($value);

@@ -23,9 +23,9 @@ class GridFieldConfig_FeatureGroup extends GridFieldConfig
 {
     /**
      *
-     * @param int $itemsPerPage - How many items per page should show up
+     * @param int  $itemsPerPage   - How many items per page should show up
      * @param bool $showPagination Whether the `Previous` and `Next` buttons should display or not, leave as null to use default
-     * @param bool $showAdd Whether the `Add` button should display or not, leave as null to use default
+     * @param bool $showAdd        Whether the `Add` button should display or not, leave as null to use default
      */
     public function __construct($itemsPerPage = null, $showPagination = null, $showAdd = null)
     {
@@ -45,18 +45,18 @@ class GridFieldConfig_FeatureGroup extends GridFieldConfig
             }
         ];
 
-        $this->addComponent($editableColumns = new GridFieldEditableColumns());
+        $this->addComponent($editableColumns = GridFieldEditableColumns::create());
         $editableColumns->setDisplayFields($displayFields);
         $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
         if ($sortByGroup) {
-            $this->addComponent(new GridFieldOrderableRows());
+            $this->addComponent(GridFieldOrderableRows::create());
         }
-        $this->addComponent(new GridFieldButtonRow('before'));
-        $this->addComponent(new GridFieldAddNewInlineButton('buttons-before-left'));
-        $this->addComponent(new GridFieldToolbarHeader());
-        $this->addComponent(new GridFieldTitleHeader());
-        $this->addComponent(new GridFieldFooter());
-        $this->addComponent(new GridFieldDeleteAction());
+        $this->addComponent(GridFieldButtonRow::create('before'));
+        $this->addComponent(GridFieldAddNewInlineButton::create('buttons-before-left'));
+        $this->addComponent(GridFieldToolbarHeader::create());
+        $this->addComponent(GridFieldTitleHeader::create());
+        $this->addComponent(GridFieldFooter::create());
+        $this->addComponent(GridFieldDeleteAction::create());
         $this->extend('updateConfig');
     }
 }
