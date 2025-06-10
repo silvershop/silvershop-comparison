@@ -9,6 +9,9 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 
+/**
+ * @extends PageController<ProductComparisonPage>
+ */
 class ProductComparisonPageController extends PageController
 {
     private static array $allowed_actions = [
