@@ -10,11 +10,7 @@ use SilverStripe\ORM\DataList;
 
 class ProductComparisonPage extends Page
 {
-    /**
-     * @config
-     * @var    int
-     */
-    private static $max_product_Comparisons;
+    private static int $max_product_comparisons = 0;
 
     private static string $icon = 'silvershop/comparison:images/compare.png';
 
@@ -30,7 +26,7 @@ class ProductComparisonPage extends Page
             $all = $this->getSelectionIDs();
             $all[$id] = $id;
 
-            if ($max = static::config()->get('max_product_Comparisons')) {
+            if ($max = static::config()->get('max_product_comparisons')) {
                 if (count($all) > $max) {
                     return false;
                 }
@@ -68,9 +64,6 @@ class ProductComparisonPage extends Page
         return $this;
     }
 
-    /**
-     * @return array
-     */
     protected function getSelectionIDs(): array
     {
         if ($ids = Controller::curr()->getRequest()->getSession()->get("ProductComparisons")) {

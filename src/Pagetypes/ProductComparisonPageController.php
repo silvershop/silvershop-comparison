@@ -36,7 +36,7 @@ class ProductComparisonPageController extends PageController
      */
     public function getComparedTableList(): ?ArrayList
     {
-        if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')) {
+        if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) {
             $output = ArrayList::create();
             $products = $this->Comp();
             $previousHadProduct = true;
@@ -81,7 +81,7 @@ class ProductComparisonPageController extends PageController
             );
         }
 
-        if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')) {
+        if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) {
             if ($pad && $output->count() < $max) {
                 for ($i = $output->count(); $i < $max; $i++) {
                     $output->push(
@@ -111,7 +111,7 @@ class ProductComparisonPageController extends PageController
                 return $this->customise(
                     ArrayData::create(
                         [
-                            'Count' => Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')
+                            'Count' => Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')
                         ]
                     )
                 )->renderWith('CompareMessage_Exceeded');
