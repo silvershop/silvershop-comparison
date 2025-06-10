@@ -97,7 +97,7 @@ class ProductFeaturesExtension extends Extension
     {
         if ($group = FeatureGroup::get()->byID($groupid)) {
             $features = $group->Features();
-            $sort = $this->owner->Features()->max('Sort'); // not correct way
+            $sort = $this->owner->Features()->max('Sort') + 1;
 
             foreach ($features as $feature) {
                 // add empty ProductFeatureValue if not present
@@ -106,8 +106,9 @@ class ProductFeaturesExtension extends Extension
                     $productFeatureValue = ProductFeatureValue::create();
                     $productFeatureValue->FeatureID = $feature->ID;
                     $productFeatureValue->ProductID = $this->owner->ID; // seems to be obsolete, item is linked via many_many
+                    $productFeatureValue->Sort = $sort;
                     $productFeatureValue->write();
-                    $this->owner->Features()->add($productFeatureValue, ['Sort'=>$sort]);
+                    $this->owner->Features()->add($productFeatureValue);
                     $sort++;
                 }
             }
