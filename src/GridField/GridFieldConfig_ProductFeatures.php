@@ -46,6 +46,7 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
                         $field->setName($column);
                         return $field;
                     }
+
                     return HiddenField::create($column);
                 }
             ]
@@ -57,6 +58,7 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
         if (!$sortByGroup) {
             $this->addComponent(GridFieldOrderableRows::create());
         }
+
         $this->addComponent(GridFieldButtonRow::create('before'));
         $this->addComponent(GridFieldAddNewInlineButton::create('buttons-before-left'));
         $this->addComponent(GridFieldToolbarHeader::create());

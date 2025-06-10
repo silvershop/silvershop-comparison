@@ -33,6 +33,7 @@ class FeatureGroup extends DataObject
     {
         $fields = parent::getCMSFields();
         $fields->removeByName('Features');
+
         $config = GridFieldConfig_FeatureGroup::create();
         $field = GridField::create('Features', 'Features', $this->owner->Features(), $config);
         $fields->addFieldToTab('Root.Main', $field);

@@ -26,10 +26,8 @@ class ProductComparisonPage extends Page
             $all = $this->getSelectionIDs();
             $all[$id] = $id;
 
-            if ($max = static::config()->get('max_product_comparisons')) {
-                if (count($all) > $max) {
-                    return false;
-                }
+            if (($max = static::config()->get('max_product_comparisons')) && count($all) > $max) {
+                return false;
             }
 
             $this->setSelectionIDs($all);
@@ -78,9 +76,10 @@ class ProductComparisonPage extends Page
     public function Comp(): ?DataList
     {
         $ids = $this->getSelectionIDs();
-        if ($ids) {
+        if ($ids !== []) {
             return Product::get()->filter("ID", $ids);
         }
+
         return null;
     }
 
@@ -92,7 +91,7 @@ class ProductComparisonPage extends Page
     public function Features(): DataList
     {
          return Feature::get()
-             ->leftJoin("SilverShop_ProductFeatureValue", "\"SilverShop_Feature\".\"ID\" = \"SilverShop_ProductFeatureValue\".\"FeatureID\"")
+             ->leftJoin("SilverShop_ProductFeatureValue", '"SilverShop_Feature"."ID" = "SilverShop_ProductFeatureValue"."FeatureID"')
              ->filter("ProductID", $this->getSelectionIDs());
     }
 }

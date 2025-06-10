@@ -81,17 +81,15 @@ class ProductComparisonPageController extends PageController
             );
         }
 
-        if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) {
-            if ($pad && $output->count() < $max) {
-                for ($i = $output->count(); $i < $max; $i++) {
-                    $output->push(
-                        ArrayData::create(
-                            [
-                                'Padded' => true
-                            ]
-                        )
-                    );
-                }
+        if (($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) && ($pad && $output->count() < $max)) {
+            for ($i = $output->count(); $i < $max; $i++) {
+                $output->push(
+                    ArrayData::create(
+                        [
+                            'Padded' => true
+                        ]
+                    )
+                );
             }
         }
 
@@ -105,9 +103,9 @@ class ProductComparisonPageController extends PageController
         if (Director::is_ajax()) {
             if ($result === null) {
                 $this->response->setStatusCode(404);
-
                 return $this->renderWith('CompareMessage_Missing');
-            } elseif ($result === false) {
+            }
+            if ($result === false) {
                 return $this->customise(
                     ArrayData::create(
                         [
@@ -115,12 +113,14 @@ class ProductComparisonPageController extends PageController
                         ]
                     )
                 )->renderWith('CompareMessage_Exceeded');
-            } else {
+            }
+            else {
                 return $this->renderWith('CompareMessage_Success');
             }
         }
 
         $this->redirect($this->Link());
+        return null;
     }
 
     public function remove($request): void

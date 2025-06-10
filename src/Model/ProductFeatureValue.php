@@ -71,8 +71,9 @@ class ProductFeatureValue extends DataObject
             if (!empty($selected)) {
                 $features = $features->filter("ID:not", $selected);
             }
+
             $fields->push(DropdownField::create("FeatureID", "Feature", $features->map()->toArray()));
-            $fields->push(LiteralField::create("creationnote", "<p class=\"message\">You can choose a value for this feature after saving.</p>"));
+            $fields->push(LiteralField::create("creationnote", '<p class="message">You can choose a value for this feature after saving.</p>'));
         }
 
         return $fields;

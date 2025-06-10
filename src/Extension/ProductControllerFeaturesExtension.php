@@ -47,11 +47,12 @@ class ProductControllerFeaturesExtension extends Extension
                 $group = FeatureGroup::get()->byID($groupid);
                 if ($sortByGroup) {
                     // sort on order within group
-                    $children = $features->filter("GroupID", $groupid)->sort("\"SilverShop_Feature\".\"Sort\"");
+                    $children = $features->filter("GroupID", $groupid)->sort('"SilverShop_Feature"."Sort"');
                 } else {
                     // sort on order at product level, default
                     $children = $features->filter("GroupID", $groupid);
                 }
+
                 $result->push(
                     ArrayData::create(
                         [

@@ -45,6 +45,7 @@ class GridFieldConfig_FeatureGroup extends GridFieldConfig
         if ($sortByGroup) {
             $this->addComponent(GridFieldOrderableRows::create());
         }
+
         $this->addComponent(GridFieldButtonRow::create('before'));
         $this->addComponent(GridFieldAddNewInlineButton::create('buttons-before-left'));
         $this->addComponent(GridFieldToolbarHeader::create());

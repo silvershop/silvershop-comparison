@@ -101,6 +101,7 @@ class Feature extends DataObject
         if ($this->Group()->exists()) {
             return $this->Group()->Title . ' - ' . $this->Title;
         }
+
         return $this->Title;
     }
 
@@ -125,9 +126,8 @@ class Feature extends DataObject
 
         if (isset($fields[$this->ValueType])) {
             return $fields[$this->ValueType];
-        } else {
-            return LiteralField::create("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
         }
+        return LiteralField::create("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
     }
 
     public function getValueDBField($value): DBBoolean|DBFloat|DBVarchar

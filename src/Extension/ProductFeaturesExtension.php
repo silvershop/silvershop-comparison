@@ -38,12 +38,13 @@ class ProductFeaturesExtension extends Extension
             $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
             if ($sortByGroup) {
                 $features = $this->owner->Features()
-                    ->leftJoin('SilverShop_Feature', "\"SilverShop_Feature\".\"ID\"=\"SilverShop_ProductFeatureValue\".\"FeatureID\"")
-                    ->leftJoin('SilverShop_FeatureGroup', "\"SilverShop_FeatureGroup\".\"ID\"=\"SilverShop_Feature\".\"GroupID\"")
-                    ->Sort("\"SilverShop_FeatureGroup\".\"Title\" ASC, \"SilverShop_Feature\".\"Sort\" ASC");
+                    ->leftJoin('SilverShop_Feature', '"SilverShop_Feature"."ID"="SilverShop_ProductFeatureValue"."FeatureID"')
+                    ->leftJoin('SilverShop_FeatureGroup', '"SilverShop_FeatureGroup"."ID"="SilverShop_Feature"."GroupID"')
+                    ->Sort('"SilverShop_FeatureGroup"."Title" ASC, "SilverShop_Feature"."Sort" ASC');
             } else {
                 $features = $this->owner->Features();
             }
+
             $grid = GridField::create("Features", "Features", $features, $config);
             $fields->addFieldToTab("Root.Features", $grid);
         }
@@ -52,6 +53,7 @@ class ProductFeaturesExtension extends Extension
         $field = DropdownField::create('QuickAddFeatureGroupID', 'Add all features from group', FeatureGroup::get()->map('ID', 'Title'));
         $field->setEmptyString('-');
         $field->setDescription('After save, all features of selected group will be added to the product');
+
         $fields->addFieldToTab('Root.Features', $field);
     }
 
@@ -69,6 +71,7 @@ class ProductFeaturesExtension extends Extension
         if ($page = ProductComparisonPage::get()->first()) {
             return $page->Link("add/" . $this->owner->ID);
         }
+
         return null;
     }
 
@@ -77,6 +80,7 @@ class ProductFeaturesExtension extends Extension
         if ($page = ProductComparisonPage::get()->first()) {
             return $page->Link("remove/" . $this->owner->ID);
         }
+
         return null;
     }
 
