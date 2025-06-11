@@ -70,10 +70,10 @@ class ProductComparisonPageController extends PageController
 
     public function ValuesForFeature($id, $pad = false): ArrayList
     {
-        $output = ArrayList::create();
+        $outputArrayList = ArrayList::create();
 
         foreach ($this->Comp() as $comp) {
-            $output->push(
+            $outputArrayList->push(
                 ProductFeatureValue::get()
                     ->filter("ProductID", $comp->ID)
                     ->filter("FeatureID", $id)
@@ -81,9 +81,9 @@ class ProductComparisonPageController extends PageController
             );
         }
 
-        if (($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) && ($pad && $output->count() < $max)) {
-            for ($i = $output->count(); $i < $max; $i++) {
-                $output->push(
+        if (($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) && ($pad && $outputArrayList->count() < $max)) {
+            for ($i = $outputArrayList->count(); $i < $max; $i++) {
+                $outputArrayList->push(
                     ArrayData::create(
                         [
                             'Padded' => true
@@ -93,7 +93,7 @@ class ProductComparisonPageController extends PageController
             }
         }
 
-        return $output;
+        return $outputArrayList;
     }
 
     public function add($request)
@@ -105,6 +105,7 @@ class ProductComparisonPageController extends PageController
                 $this->response->setStatusCode(404);
                 return $this->renderWith('CompareMessage_Missing');
             }
+
             if ($result === false) {
                 return $this->customise(
                     ArrayData::create(
@@ -114,9 +115,8 @@ class ProductComparisonPageController extends PageController
                     )
                 )->renderWith('CompareMessage_Exceeded');
             }
-            else {
-                return $this->renderWith('CompareMessage_Success');
-            }
+
+            return $this->renderWith('CompareMessage_Success');
         }
 
         $this->redirect($this->Link());

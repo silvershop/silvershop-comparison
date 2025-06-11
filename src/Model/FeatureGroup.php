@@ -31,12 +31,12 @@ class FeatureGroup extends DataObject
 
     public function getCMSFields(): FieldList
     {
-        $fields = parent::getCMSFields();
-        $fields->removeByName('Features');
+        $fieldList = parent::getCMSFields();
+        $fieldList->removeByName('Features');
 
-        $config = GridFieldConfig_FeatureGroup::create();
-        $field = GridField::create('Features', 'Features', $this->owner->Features(), $config);
-        $fields->addFieldToTab('Root.Main', $field);
-        return $fields;
+        $gridFieldConfigFeatureGroup = GridFieldConfig_FeatureGroup::create();
+        $gridField = GridField::create('Features', 'Features', $this->owner->Features(), $gridFieldConfigFeatureGroup);
+        $fieldList->addFieldToTab('Root.Main', $gridField);
+        return $fieldList;
     }
 }

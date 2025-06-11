@@ -53,15 +53,15 @@ class ProductFeatureValue extends DataObject
 
     public function getCMSFields(): FieldList
     {
-        $fields = FieldList::create();
+        $fieldList = FieldList::create();
         $feature = $this->Feature();
 
-        $field = TextField::create('ProductID', 'ProductID');
-        $fields->push($field);
+        $textField = TextField::create('ProductID', 'ProductID');
+        $fieldList->push($textField);
 
         if ($feature->exists()) {
-            $fields->push(ReadonlyField::create("FeatureTitle", "Feature", $feature->Title));
-            $fields->push($feature->getValueField());
+            $fieldList->push(ReadonlyField::create("FeatureTitle", "Feature", $feature->Title));
+            $fieldList->push($feature->getValueField());
         } else {
             $selected = Feature::get()
                 ->innerJoin("SilverShop_ProductFeatureValue", "SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
@@ -72,11 +72,11 @@ class ProductFeatureValue extends DataObject
                 $features = $features->filter("ID:not", $selected);
             }
 
-            $fields->push(DropdownField::create("FeatureID", "Feature", $features->map()->toArray()));
-            $fields->push(LiteralField::create("creationnote", '<p class="message">You can choose a value for this feature after saving.</p>'));
+            $fieldList->push(DropdownField::create("FeatureID", "Feature", $features->map()->toArray()));
+            $fieldList->push(LiteralField::create("creationnote", '<p class="message">You can choose a value for this feature after saving.</p>'));
         }
 
-        return $fields;
+        return $fieldList;
     }
 
     public function getTitle()

@@ -41,7 +41,7 @@ class ProductControllerFeaturesExtension extends Extension
         $groupids = $groups->getIDList();
 
         //pack existing features into seperate lists
-        $result = ArrayList::create();
+        $arrayList = ArrayList::create();
         if (!empty($groupids)) {
             foreach ($groupids as $groupid) {
                 $group = FeatureGroup::get()->byID($groupid);
@@ -53,7 +53,7 @@ class ProductControllerFeaturesExtension extends Extension
                     $children = $features->filter("GroupID", $groupid);
                 }
 
-                $result->push(
+                $arrayList->push(
                     ArrayData::create(
                         [
                             'Group' => $group,
@@ -66,7 +66,7 @@ class ProductControllerFeaturesExtension extends Extension
             if ($showungrouped) {
                 $ungrouped = $features->filter("GroupID:not", $groupids);
                 if ($ungrouped->exists() && $showungrouped) {
-                    $result->push(
+                    $arrayList->push(
                         ArrayData::create(
                             [
                                 'Children' => $ungrouped
@@ -77,6 +77,6 @@ class ProductControllerFeaturesExtension extends Extension
             }
         }
 
-        return $result;
+        return $arrayList;
     }
 }

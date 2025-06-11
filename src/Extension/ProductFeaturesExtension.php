@@ -30,9 +30,9 @@ class ProductFeaturesExtension extends Extension
         'Features' => ProductFeatureValue::class
     ];
 
-    public function updateCMSFields(FieldList $fields): void
+    public function updateCMSFields(FieldList $fieldList): void
     {
-        $config = GridFieldConfig_ProductFeatures::create();
+        $gridFieldConfigProductFeatures = GridFieldConfig_ProductFeatures::create();
 
         if ($this->owner->exists()) {
             $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
@@ -45,16 +45,16 @@ class ProductFeaturesExtension extends Extension
                 $features = $this->owner->Features();
             }
 
-            $grid = GridField::create("Features", "Features", $features, $config);
-            $fields->addFieldToTab("Root.Features", $grid);
+            $grid = GridField::create("Features", "Features", $features, $gridFieldConfigProductFeatures);
+            $fieldList->addFieldToTab("Root.Features", $grid);
         }
 
         // quick add all from feature group
-        $field = DropdownField::create('QuickAddFeatureGroupID', 'Add all features from group', FeatureGroup::get()->map('ID', 'Title'));
-        $field->setEmptyString('-');
-        $field->setDescription('After save, all features of selected group will be added to the product');
+        $dropdownField = DropdownField::create('QuickAddFeatureGroupID', 'Add all features from group', FeatureGroup::get()->map('ID', 'Title'));
+        $dropdownField->setEmptyString('-');
+        $dropdownField->setDescription('After save, all features of selected group will be added to the product');
 
-        $fields->addFieldToTab('Root.Features', $field);
+        $fieldList->addFieldToTab('Root.Features', $dropdownField);
     }
 
     public function CompareLink(): ?string

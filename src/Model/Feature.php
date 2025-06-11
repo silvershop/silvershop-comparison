@@ -71,7 +71,7 @@ class Feature extends DataObject
 
     public function getCMSFields(): FieldList
     {
-        $fields = FieldList::create(
+        $fieldList = FieldList::create(
             TextField::create("Title"),
             TextField::create("Unit"),
             DropdownField::create(
@@ -81,19 +81,19 @@ class Feature extends DataObject
             )
         );
 
-        $groups = FeatureGroup::get();
+        $featureGroupDataList = FeatureGroup::get();
 
-        if ($groups->exists()) {
-            $fields->insertAfter(
+        if ($featureGroupDataList->exists()) {
+            $fieldList->insertAfter(
                 "Unit",
-                DropdownField::create("GroupID", "Group", $groups->map()->toArray())
+                DropdownField::create("GroupID", "Group", $featureGroupDataList->map()->toArray())
                     ->setHasEmptyDefault(true)
             );
         }
 
-        $this->extend('updateCMSFields', $fields);
+        $this->extend('updateCMSFields', $fieldList);
 
-        return $fields;
+        return $fieldList;
     }
 
     public function listTitle(): string
@@ -127,6 +127,7 @@ class Feature extends DataObject
         if (isset($fields[$this->ValueType])) {
             return $fields[$this->ValueType];
         }
+
         return LiteralField::create("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
     }
 

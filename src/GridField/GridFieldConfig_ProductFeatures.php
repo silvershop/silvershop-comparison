@@ -29,13 +29,13 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
             'FeatureID'  => [
                 'title' => 'Feature',
                 'callback' => function ($record, $column, $grid): DropdownField {
-                    $dropdown = DropdownField::create(
+                    $dropdownField = DropdownField::create(
                         $column,
                         'Feature',
                         Feature::get()->map('ID', 'listTitle')->toArray()
                     );
-                    $dropdown->addExtraClass('on_feature_select_fetch_value_field');
-                    return $dropdown;
+                    $dropdownField->addExtraClass('on_feature_select_fetch_value_field');
+                    return $dropdownField;
                 }
             ],
             'Value' => [
