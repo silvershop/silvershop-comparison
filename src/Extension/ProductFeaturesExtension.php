@@ -121,13 +121,11 @@ class ProductFeaturesExtension extends Extension
 
     public function onBeforeDelete(): void
     {
-        parent::onBeforeDelete();
         $this->owner->Features()->removeAll();
     }
 
     public function onAfterWrite(): void
     {
-        parent::onAfterWrite();
         if (isset($_POST['QuickAddFeatureGroupID']) && $groupid=(int) $_POST['QuickAddFeatureGroupID']) {
             $this->addAllFeaturesFromGroup($groupid);
         }
