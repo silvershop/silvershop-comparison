@@ -4,6 +4,7 @@ namespace SilverShop\Comparison\Model;
 
 use SilverShop\Page\Product;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
@@ -65,7 +66,7 @@ class ProductFeatureValue extends DataObject
         } else {
             $selected = Feature::get()
                 ->innerJoin("SilverShop_ProductFeatureValue", "SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
-                ->filter("SilverShop_ProductFeatureValue.ProductID", Controller::curr()->currentPageID())
+                ->filter("SilverShop_ProductFeatureValue.ProductID", Director::get_current_page()->ID)
                 ->getIDList();
             $features = Feature::get();
             if (!empty($selected)) {
@@ -79,13 +80,19 @@ class ProductFeatureValue extends DataObject
         return $fieldList;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
-        return $this->Feature()->Title;
+        if ($this->Feature()->exists()) {
+            return $this->Feature()->Title;
+        }
+        return null;
     }
 
-    public function TypedValue(): DBBoolean|DBFloat|DBVarchar
+    public function TypedValue(): DBBoolean|DBFloat|DBVarchar|null
     {
-        return $this->Feature()->getValueDBField($this->Value);
+        if ($this->Feature()->exists()) {
+            return $this->Feature()->getValueDBField($this->Value);
+        }
+        return null;
     }
 }
