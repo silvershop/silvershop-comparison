@@ -171,7 +171,7 @@ class ProductFeaturesExtension extends Extension
 
             if ($showungrouped) {
                 $ungrouped = $features->filter("GroupID:not", $groupids);
-                if ($ungrouped->exists() && $showungrouped) {
+                if ($ungrouped->exists()) {
                     $arrayList->push(
                         ArrayData::create(
                             [
