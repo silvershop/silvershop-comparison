@@ -14,7 +14,9 @@ use SilverStripe\Core\Extension;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\HasManyList;
+use SilverStripe\View\ArrayData;
 
 /**
  * Class ProductFeaturesExtension
@@ -117,6 +119,71 @@ class ProductFeaturesExtension extends Extension
                 }
             }
         }
+    }
+
+    /**
+     * Override features list with grouping.
+     */
+    public function GroupedFeatures($showungrouped = false): ArrayList
+    {
+        $features = $this->owner->Features()
+            ->innerJoin("SilverShop_Feature", "SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID");
+
+        $featuresids = $features->getIDList();
+
+        // check sorting option
+        $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
+
+        //figure out feature groups
+        $groups = FeatureGroup::get()
+            ->innerJoin("SilverShop_Feature", "SilverShop_Feature.GroupID = SilverShop_FeatureGroup.ID")
+            ->innerJoin("SilverShop_ProductFeatureValue", "SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
+            ->where("SilverShop_ProductFeatureValue.ID IN (" . implode(',', $featuresids) . ")");
+
+        if ($sortByGroup) {
+            $groups = $groups->Sort('Title ASC');
+        }
+
+        $groupids = $groups->getIDList();
+
+        //pack existing features into seperate lists
+        $arrayList = ArrayList::create();
+        if (!empty($groupids)) {
+            foreach ($groupids as $groupid) {
+                $group = FeatureGroup::get()->byID($groupid);
+                if ($sortByGroup) {
+                    // sort on order within group
+                    $children = $features->filter("GroupID", $groupid)->sort('"SilverShop_Feature"."Sort"');
+                } else {
+                    // sort on order at product level, default
+                    $children = $features->filter("GroupID", $groupid);
+                }
+
+                $arrayList->push(
+                    ArrayData::create(
+                        [
+                        'Group' => $group,
+                        'Children' => $children
+                        ]
+                    )
+                );
+            }
+
+            if ($showungrouped) {
+                $ungrouped = $features->filter("GroupID:not", $groupids);
+                if ($ungrouped->exists() && $showungrouped) {
+                    $arrayList->push(
+                        ArrayData::create(
+                            [
+                            'Children' => $ungrouped
+                            ]
+                        )
+                    );
+                }
+            }
+        }
+
+        return $arrayList;
     }
 
     public function onBeforeDelete(): void

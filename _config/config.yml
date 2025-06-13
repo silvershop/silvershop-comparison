@@ -4,9 +4,6 @@ Name: productcomparison
 SilverShop\Page\Product:
   extensions:
     - 'SilverShop\Comparison\Extension\ProductFeaturesExtension'
-SilverShop\Page\ProductController:
-  extensions:
-    - 'SilverShop\Comparison\Extension\ProductControllerFeaturesExtension'
 SilverShop\Admin\ProductCatalogAdmin:
   managed_models:
     - 'SilverShop\Comparison\Model\Feature'
