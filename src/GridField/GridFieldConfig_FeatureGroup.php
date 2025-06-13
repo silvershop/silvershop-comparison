@@ -34,9 +34,7 @@ class GridFieldConfig_FeatureGroup extends GridFieldConfig
                 'title' => 'Unit',
                 'field' => TextField::class,
             ],
-            'ValueType' => function ($record, $column, $grid) {
-                return DropdownField::create($column, "Value Type", singleton(Feature::class)->dbObject('ValueType')->enumValues());
-            }
+            'ValueType' => fn($record, $column, $grid) => DropdownField::create($column, "Value Type", singleton(Feature::class)->dbObject('ValueType')->enumValues())
         ];
 
         $this->addComponent($editableColumns = GridFieldEditableColumns::create());

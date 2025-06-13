@@ -89,7 +89,7 @@ class ProductFeaturesExtension extends Extension
         $products = Controller::curr()->getRequest()->getSession()->get("ProductComparisons");
 
         if ($products) {
-            $products = explode(",", $products);
+            $products = explode(",", (string) $products);
 
             return in_array($this->owner->ID, $products);
         }

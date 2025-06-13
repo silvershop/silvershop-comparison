@@ -65,7 +65,7 @@ class ProductComparisonPage extends Page
     protected function getSelectionIDs(): array
     {
         if ($ids = Controller::curr()->getRequest()->getSession()->get("ProductComparisons")) {
-            $ids = explode(',', $ids);
+            $ids = explode(',', (string) $ids);
 
             return array_combine($ids, $ids);
         }

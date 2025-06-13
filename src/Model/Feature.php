@@ -124,11 +124,7 @@ class Feature extends DataObject
             'String' => TextField::create("Value")
         ];
 
-        if (isset($fields[$this->ValueType])) {
-            return $fields[$this->ValueType];
-        }
-
-        return LiteralField::create("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
+        return $fields[$this->ValueType] ?? LiteralField::create("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
     }
 
     public function getValueDBField($value): DBBoolean|DBFloat|DBVarchar
