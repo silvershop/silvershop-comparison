@@ -9,9 +9,6 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 
-/**
- * @extends PageController<ProductComparisonPage>
- */
 class ProductComparisonPageController extends PageController
 {
     private static array $allowed_actions = [
@@ -38,7 +35,7 @@ class ProductComparisonPageController extends PageController
     {
         if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) {
             $output = ArrayList::create();
-            $products = $this->Comp();
+            $products = $this->data()->Comp();
             $previousHadProduct = true;
 
             for ($i = 1; $i <= $max; $i++) {
@@ -72,7 +69,7 @@ class ProductComparisonPageController extends PageController
     {
         $outputArrayList = ArrayList::create();
 
-        foreach ($this->Comp() as $comp) {
+        foreach ($this->data()->Comp() as $comp) {
             $outputArrayList->push(
                 ProductFeatureValue::get()
                     ->filter("ProductID", $comp->ID)
@@ -98,7 +95,7 @@ class ProductComparisonPageController extends PageController
 
     public function add($request)
     {
-        $result = $this->addToSelection($request->param('ID'));
+        $result = $this->data()->addToSelection($request->param('ID'));
 
         if (Director::is_ajax()) {
             if ($result === null) {
@@ -125,7 +122,7 @@ class ProductComparisonPageController extends PageController
 
     public function remove($request): void
     {
-        $result = $this->removeFromSelection($request->param('ID'));
+        $result = $this->data()->removeFromSelection($request->param('ID'));
 
         if (Director::is_ajax()) {
             if ($result === null) {
