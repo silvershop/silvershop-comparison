@@ -21,13 +21,7 @@ use Symbiote\GridFieldExtensions\GridFieldTitleHeader;
  */
 class GridFieldConfig_FeatureGroup extends GridFieldConfig
 {
-    /**
-     *
-     * @param int $itemsPerPage - How many items per page should show up
-     * @param bool $showPagination Whether the `Previous` and `Next` buttons should display or not, leave as null to use default
-     * @param bool $showAdd Whether the `Add` button should display or not, leave as null to use default
-     */
-    public function __construct($itemsPerPage = null, $showPagination = null, $showAdd = null)
+    public function __construct()
     {
         parent::__construct();
 
@@ -40,23 +34,22 @@ class GridFieldConfig_FeatureGroup extends GridFieldConfig
                 'title' => 'Unit',
                 'field' => TextField::class,
             ],
-            'ValueType' => function($record, $column, $grid) {
-                return DropdownField::create($column,"Value Type", singleton(Feature::class)->dbObject('ValueType')->enumValues());
-            }
+            'ValueType' => fn($record, $column, $grid) => DropdownField::create($column, "Value Type", singleton(Feature::class)->dbObject('ValueType')->enumValues())
         ];
 
-        $this->addComponent($editableColumns = new GridFieldEditableColumns());
+        $this->addComponent($editableColumns = GridFieldEditableColumns::create());
         $editableColumns->setDisplayFields($displayFields);
         $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
-        if( $sortByGroup ) {
-            $this->addComponent(new GridFieldOrderableRows());
+        if ($sortByGroup) {
+            $this->addComponent(GridFieldOrderableRows::create());
         }
-        $this->addComponent(new GridFieldButtonRow('before'));
-        $this->addComponent(new GridFieldAddNewInlineButton('buttons-before-left'));
-        $this->addComponent(new GridFieldToolbarHeader());
-        $this->addComponent(new GridFieldTitleHeader());
-        $this->addComponent(new GridFieldFooter());
-        $this->addComponent(new GridFieldDeleteAction());
+
+        $this->addComponent(GridFieldButtonRow::create('before'));
+        $this->addComponent(GridFieldAddNewInlineButton::create('buttons-before-left'));
+        $this->addComponent(GridFieldToolbarHeader::create());
+        $this->addComponent(GridFieldTitleHeader::create());
+        $this->addComponent(GridFieldFooter::create());
+        $this->addComponent(GridFieldDeleteAction::create());
         $this->extend('updateConfig');
     }
 }

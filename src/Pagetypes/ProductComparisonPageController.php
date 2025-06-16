@@ -4,14 +4,14 @@ namespace SilverShop\Comparison\Pagetypes;
 
 use PageController;
 use SilverShop\Comparison\Model\ProductFeatureValue;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
-use SilverStripe\Control\Director;
 
 class ProductComparisonPageController extends PageController
 {
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'add',
         'remove'
     ];
@@ -30,27 +30,30 @@ class ProductComparisonPageController extends PageController
      *  <% end_loop %>
      *
      * Ensure you have set MaxProductComparisons through the config API.
-     *
-     * @return ArrayList
      */
-    public function getComparedTableList() {
-        if($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')) {
-            $output = new ArrayList();
-            $products = $this->Comp();
+    public function getComparedTableList(): ?ArrayList
+    {
+        if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) {
+            $output = ArrayList::create();
+            $products = $this->data()->Comp();
             $previousHadProduct = true;
 
-            for($i = 1; $i <= $max; $i++) {
+            for ($i = 1; $i <= $max; $i++) {
                 $product = $products->limit(1, $i - 1)->First();
 
-                $output->push(new ArrayData(array(
-                    'First' => ($i == 1),
-                    'Last' => ($i == $max),
-                    'Product' => $product,
-                    'IsFirstNonProduct' => (!$product && $previousHadProduct)
-                )));
+                $output->push(
+                    ArrayData::create(
+                        [
+                            'First' => ($i == 1),
+                            'Last' => ($i == $max),
+                            'Product' => $product,
+                            'IsFirstNonProduct' => (!$product && $previousHadProduct)
+                        ]
+                    )
+                );
 
 
-                if(!$product) {
+                if (!$product) {
                     $previousHadProduct = false;
                 }
             }
@@ -62,57 +65,67 @@ class ProductComparisonPageController extends PageController
     }
 
 
-    public function ValuesForFeature($id, $pad = false) {
-        $out = new Arraylist();
+    public function ValuesForFeature($id, $pad = false): ArrayList
+    {
+        $outputArrayList = ArrayList::create();
 
-        foreach($this->Comp() as $comp){
-            $out->push(
+        foreach ($this->data()->Comp() as $comp) {
+            $outputArrayList->push(
                 ProductFeatureValue::get()
-                    ->filter("ProductID",$comp->ID)
-                    ->filter("FeatureID",$id)
+                    ->filter("ProductID", $comp->ID)
+                    ->filter("FeatureID", $id)
                     ->first()
             );
         }
 
-        if ($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')) {
-            if ($pad && $out->count() < $max) {
-                for($i = $out->count(); $i < $max; $i++) {
-                    $out->push(new ArrayData(array(
-                        'Padded' => true
-                    )));
-                }
+        if (($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) && ($pad && $outputArrayList->count() < $max)) {
+            for ($i = $outputArrayList->count(); $i < $max; $i++) {
+                $outputArrayList->push(
+                    ArrayData::create(
+                        [
+                            'Padded' => true
+                        ]
+                    )
+                );
             }
         }
 
-        return $out;
+        return $outputArrayList;
     }
 
-    public function add($request) {
-        $result = $this->addToSelection($request->param('ID'));
+    public function add($request)
+    {
+        $result = $this->data()->addToSelection($request->param('ID'));
 
         if (Director::is_ajax()) {
-            if($result === null) {
+            if ($result === null) {
                 $this->response->setStatusCode(404);
-
                 return $this->renderWith('CompareMessage_Missing');
-            } else if($result === false) {
-                return $this->customise(new ArrayData(array(
-                    'Count' => Config::inst()->get(ProductComparisonPage::class, 'max_product_Comparisons')
-                )))->renderWith('CompareMessage_Exceeded');
-            } else {
-                return $this->renderWith('CompareMessage_Success');
             }
 
+            if ($result === false) {
+                return $this->customise(
+                    ArrayData::create(
+                        [
+                            'Count' => Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')
+                        ]
+                    )
+                )->renderWith('CompareMessage_Exceeded');
+            }
+
+            return $this->renderWith('CompareMessage_Success');
         }
 
         $this->redirect($this->Link());
+        return null;
     }
 
-    public function remove($request) {
-        $result = $this->removeFromSelection($request->param('ID'));
+    public function remove($request): void
+    {
+        $result = $this->data()->removeFromSelection($request->param('ID'));
 
         if (Director::is_ajax()) {
-            if($result === null) {
+            if ($result === null) {
                 $this->response->setStatusCode(404);
             }
 
@@ -121,5 +134,4 @@ class ProductComparisonPageController extends PageController
 
         $this->redirect($this->Link());
     }
-
 }
