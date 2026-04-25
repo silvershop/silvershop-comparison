@@ -48,6 +48,14 @@ class Feature extends DataObject
         'ProductFeatureValues' => ProductFeatureValue::class
     ];
 
+    private static array $cascade_deletes = [
+        'ProductFeatureValues',
+    ];
+
+    private static array $cascade_duplicates = [
+        'ProductFeatureValues',
+    ];
+
     private static array $has_one = [
         "Group" => FeatureGroup::class
     ];

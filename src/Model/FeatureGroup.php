@@ -22,6 +22,14 @@ class FeatureGroup extends DataObject
         "Features" => Feature::class
     ];
 
+    private static array $cascade_deletes = [
+        'Features',
+    ];
+
+    private static array $cascade_duplicates = [
+        'Features',
+    ];
+
     private static string $singular_name = "Feature Group";
 
     private static string $plural_name = "Feature Groups";

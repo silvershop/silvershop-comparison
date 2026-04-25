@@ -33,6 +33,14 @@ class ProductFeaturesExtension extends Extension
         'Features' => ProductFeatureValue::class
     ];
 
+    private static array $cascade_deletes = [
+        'Features',
+    ];
+
+    private static array $cascade_duplicates = [
+        'Features',
+    ];
+
     public function updateCMSFields(FieldList $fieldList): void
     {
         $gridFieldConfigProductFeatures = GridFieldConfig_ProductFeatures::create();
@@ -101,9 +109,9 @@ class ProductFeaturesExtension extends Extension
         return false;
     }
 
-    public function addAllFeaturesFromGroup($groupid): void
+    public function addAllFeaturesFromGroup($groupId): void
     {
-        if ($group = FeatureGroup::get()->byID($groupid)) {
+        if ($group = FeatureGroup::get()->byID($groupId)) {
             $features = $group->Features();
             $sort = $this->owner->Features()->max('Sort') + 1;
 
@@ -189,11 +197,6 @@ class ProductFeaturesExtension extends Extension
         }
 
         return $arrayList;
-    }
-
-    public function onBeforeDelete(): void
-    {
-        $this->owner->Features()->removeAll();
     }
 
     public function onAfterWrite(): void
