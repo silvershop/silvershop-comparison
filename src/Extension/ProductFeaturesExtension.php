@@ -9,6 +9,7 @@ use SilverShop\Comparison\Model\ProductFeatureValue;
 use SilverShop\Comparison\Pagetypes\ProductComparisonPage;
 use SilverShop\Page\Product;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Forms\DropdownField;
@@ -42,7 +43,7 @@ class ProductFeaturesExtension extends Extension
                 $features = $this->owner->Features()
                     ->leftJoin('SilverShop_Feature', '"SilverShop_Feature"."ID"="SilverShop_ProductFeatureValue"."FeatureID"')
                     ->leftJoin('SilverShop_FeatureGroup', '"SilverShop_FeatureGroup"."ID"="SilverShop_Feature"."GroupID"')
-                    ->Sort('"SilverShop_FeatureGroup"."Title" ASC, "SilverShop_Feature"."Sort" ASC');
+                    ->sort('"SilverShop_FeatureGroup"."Title" ASC, "SilverShop_Feature"."Sort" ASC');
             } else {
                 $features = $this->owner->Features();
             }
@@ -88,12 +89,13 @@ class ProductFeaturesExtension extends Extension
 
     public function isCompared(): bool
     {
-        $products = Controller::curr()->getRequest()->getSession()->get("ProductComparisons");
+        $request = $this->getCurrentRequest();
+        $products = $request ? $request->getSession()->get('ProductComparisons') : null;
 
         if ($products) {
             $products = explode(",", (string) $products);
 
-            return in_array($this->owner->ID, $products);
+            return in_array((string) $this->owner->ID, $products, true);
         }
 
         return false;
@@ -130,6 +132,9 @@ class ProductFeaturesExtension extends Extension
             ->innerJoin("SilverShop_Feature", "SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID");
 
         $featuresids = $features->getIDList();
+        if (empty($featuresids)) {
+            return ArrayList::create();
+        }
 
         // check sorting option
         $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
@@ -141,7 +146,7 @@ class ProductFeaturesExtension extends Extension
             ->where("SilverShop_ProductFeatureValue.ID IN (" . implode(',', $featuresids) . ")");
 
         if ($sortByGroup) {
-            $groups = $groups->Sort('Title ASC');
+            $groups = $groups->sort('Title ASC');
         }
 
         $groupids = $groups->getIDList();
@@ -193,8 +198,21 @@ class ProductFeaturesExtension extends Extension
 
     public function onAfterWrite(): void
     {
-        if (isset($_POST['QuickAddFeatureGroupID']) && $groupid=(int) $_POST['QuickAddFeatureGroupID']) {
+        $request = $this->getCurrentRequest();
+        $groupid = $request ? (int) $request->postVar('QuickAddFeatureGroupID') : 0;
+
+        if ($groupid > 0) {
             $this->addAllFeaturesFromGroup($groupid);
         }
+    }
+
+    protected function getCurrentRequest(): ?HTTPRequest
+    {
+        $controller = Controller::curr();
+        if (!$controller) {
+            return null;
+        }
+
+        return $controller->getRequest();
     }
 }

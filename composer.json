@@ -4,21 +4,30 @@
     "type": "silverstripe-vendormodule",
     "keywords": ["silverstripe", "ecommerce", "shop", "silvershop", "comparison", "compare", "products"],
     "require" : {
-        "silvershop/core": "^4"
+        "php": "^8.1",
+        "silvershop/core": "dev-main",
+        "php-http/guzzle7-adapter": "1.x-dev"
     },
     "authors": [{
       "name": "SilverShop Contributors",
       "homepage": "https://github.com/silvershop/silvershop-Comparison/graphs/contributors"
     }],
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "squizlabs/php_codesniffer": "^3.0"
+        "phpunit/phpunit": "^11",
+        "cambis/silverstan": "^2.1",
+        "phpstan/phpstan": "^2.1",
+        "squizlabs/php_codesniffer": "^3.8"
+    },
+    "scripts": {
+        "phpstan": "phpstan analyse --configuration=phpstan.neon.dist --no-progress --memory-limit=1G",
+        "test": "./vendor/bin/phpunit",
+        "coverage": "./vendor/bin/phpunit --coverage-html coverage"
     },
     "prefer-stable": false,
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-main": "3.x-dev"
+            "dev-main": "6.x-dev"
         },
         "expose": [
             "javascript",
@@ -27,8 +36,19 @@
     },
     "autoload": {
         "psr-4": {
-            "SilverShop\\Comparison\\": "src/",
+            "SilverShop\\Comparison\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "SilverShop\\Comparison\\Tests\\": "tests/unit/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "composer/installers": true,
+            "silverstripe/vendor-plugin": true
         }
     }
 }

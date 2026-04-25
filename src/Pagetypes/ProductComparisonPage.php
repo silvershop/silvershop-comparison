@@ -6,6 +6,7 @@ use Page;
 use SilverShop\Comparison\Model\Feature;
 use SilverShop\Page\Product;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Session;
 use SilverStripe\ORM\DataList;
 
 class ProductComparisonPage extends Page
@@ -57,14 +58,18 @@ class ProductComparisonPage extends Page
 
     protected function setSelectionIDs(array $ids): static
     {
-        Controller::curr()->getRequest()->getSession()->set("ProductComparisons", implode(',', $ids));
+        $session = $this->getComparisonSession();
+        if ($session) {
+            $session->set('ProductComparisons', implode(',', $ids));
+        }
 
         return $this;
     }
 
     protected function getSelectionIDs(): array
     {
-        if ($ids = Controller::curr()->getRequest()->getSession()->get("ProductComparisons")) {
+        $session = $this->getComparisonSession();
+        if ($session && ($ids = $session->get('ProductComparisons'))) {
             $ids = explode(',', (string) $ids);
 
             return array_combine($ids, $ids);
@@ -93,5 +98,15 @@ class ProductComparisonPage extends Page
          return Feature::get()
              ->leftJoin("SilverShop_ProductFeatureValue", '"SilverShop_Feature"."ID" = "SilverShop_ProductFeatureValue"."FeatureID"')
              ->filter("ProductID", $this->getSelectionIDs());
+    }
+
+    protected function getComparisonSession(): ?Session
+    {
+        if (!Controller::has_curr()) {
+            return null;
+        }
+
+        $request = Controller::curr()->getRequest();
+        return $request ? $request->getSession() : null;
     }
 }

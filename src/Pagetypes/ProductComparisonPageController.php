@@ -4,7 +4,7 @@ namespace SilverShop\Comparison\Pagetypes;
 
 use PageController;
 use SilverShop\Comparison\Model\ProductFeatureValue;
-use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
@@ -30,6 +30,8 @@ class ProductComparisonPageController extends PageController
      *  <% end_loop %>
      *
      * Ensure you have set MaxProductComparisons through the config API.
+     *
+     * @return ArrayList<ArrayData>|null
      */
     public function getComparedTableList(): ?ArrayList
     {
@@ -93,11 +95,11 @@ class ProductComparisonPageController extends PageController
         return $outputArrayList;
     }
 
-    public function add($request)
+    public function add(HTTPRequest $request)
     {
         $result = $this->data()->addToSelection($request->param('ID'));
 
-        if (Director::is_ajax()) {
+        if ($request->isAjax()) {
             if ($result === null) {
                 $this->response->setStatusCode(404);
                 return $this->renderWith('CompareMessage_Missing');
@@ -110,21 +112,21 @@ class ProductComparisonPageController extends PageController
                             'Count' => Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')
                         ]
                     )
-                )->renderWith('CompareMessage_Exceeded');
+                )->renderWith('Includes/CompareMessage_Exceeded');
             }
 
-            return $this->renderWith('CompareMessage_Success');
+            return $this->renderWith('Includes/CompareMessage_Success');
         }
 
         $this->redirect($this->Link());
         return null;
     }
 
-    public function remove($request): void
+    public function remove(HTTPRequest $request): void
     {
         $result = $this->data()->removeFromSelection($request->param('ID'));
 
-        if (Director::is_ajax()) {
+        if ($request->isAjax()) {
             if ($result === null) {
                 $this->response->setStatusCode(404);
             }

@@ -1,8 +1,8 @@
 <?php
+
 namespace SilverShop\Comparison\GridField;
 
 use SilverShop\Comparison\Model\Feature;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridFieldButtonRow;
 use SilverStripe\Forms\GridField\GridFieldConfig;
@@ -16,8 +16,8 @@ use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 use Symbiote\GridFieldExtensions\GridFieldTitleHeader;
 
 /**
- * Allows editing of records contained within the GridField, instead of only allowing the ability to view records in
- * the GridField.
+ * Allows editing of records contained within the GridField, instead of only
+ * allowing the ability to view records in the GridField.
  */
 class GridFieldConfig_ProductFeatures extends GridFieldConfig
 {
@@ -54,7 +54,9 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
 
         $this->addComponent($editableColumns = GridFieldEditableColumns::create());
         $editableColumns->setDisplayFields($displayFields);
-        $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
+
+        $sortByGroup = Feature::config()->get('sort_features_by_group');
+
         if (!$sortByGroup) {
             $this->addComponent(GridFieldOrderableRows::create());
         }
