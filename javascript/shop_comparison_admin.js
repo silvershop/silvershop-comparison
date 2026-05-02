@@ -1,5 +1,5 @@
 (function($) {
-	$("body").on('change', '.on_feature_select_fetch_value_field', function(e) {
+	$("body").on('change', '.silvershop-on_feature_select_fetch_value_field', function(e) {
 		var value = $(this).parents("td").siblings(".col-Value"),
 			data = {
 				ID: $(this).val(),

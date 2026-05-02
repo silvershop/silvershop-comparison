@@ -18,7 +18,7 @@
 				<% loop $Children %>
                     <tr>
                         <th>$Title</th>
-                        <td><% include TypedValue %></td>
+                        <td><% include SilverShop\Comparison\Includes\TypedValue %></td>
                     </tr>
 				<% end_loop %>
 			<% end_loop %>
@@ -26,7 +26,7 @@
 			<% loop $Features %>
                 <tr>
                     <th>$Title</th>
-                    <td><% include TypedValue %></td>
+                    <td><% include SilverShop\Comparison\Includes\TypedValue %></td>
                 </tr>
 			<% end_loop %>
 		<% end_if %>

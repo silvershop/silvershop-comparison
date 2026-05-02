@@ -14,7 +14,7 @@
                         <tr>
                             <th>$Title</th>
                             <% loop $Up.ValuesForFeature($ID) %>
-                                <td><% include TypedValue %></td>
+                                <td><% include SilverShop\Comparison\Includes\TypedValue %></td>
                             <% end_loop %>
                         </tr>
                     <% end_loop %>
@@ -25,7 +25,7 @@
             </table>
         </div>
     <% else %>
-        <div class="product_Comparison__no_products">
+        <div class="silvershop-product_Comparison__no_products">
             <h2>Looks like you haven&#8299;t got any products to compare..</h2>
             <p>To get started first click the <strong>Compare</strong> button on product in the store.</p>
         </div>

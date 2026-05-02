@@ -34,7 +34,7 @@ class GridFieldConfig_ProductFeatures extends GridFieldConfig
                         'Feature',
                         Feature::get()->map('ID', 'listTitle')->toArray()
                     );
-                    $dropdownField->addExtraClass('on_feature_select_fetch_value_field');
+                    $dropdownField->addExtraClass('silvershop-on_feature_select_fetch_value_field');
                     return $dropdownField;
                 }
             ],

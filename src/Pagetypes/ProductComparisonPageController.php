@@ -102,7 +102,7 @@ class ProductComparisonPageController extends PageController
         if ($request->isAjax()) {
             if ($result === null) {
                 $this->response->setStatusCode(404);
-                return $this->renderWith('CompareMessage_Missing');
+                return $this->renderWith('SilverShop\\Comparison\\Includes\\CompareMessage_Missing');
             }
 
             if ($result === false) {
@@ -112,10 +112,10 @@ class ProductComparisonPageController extends PageController
                             'Count' => Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')
                         ]
                     )
-                )->renderWith('Includes/CompareMessage_Exceeded');
+                )->renderWith('SilverShop\\Comparison\\Includes\\CompareMessage_Exceeded');
             }
 
-            return $this->renderWith('Includes/CompareMessage_Success');
+            return $this->renderWith('SilverShop\\Comparison\\Includes\\CompareMessage_Success');
         }
 
         $this->redirect($this->Link());
