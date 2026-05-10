@@ -1,13 +1,13 @@
-<a href="$CompareLink">add to comparison</a>
+<a class="silvershop-product-specs__compare-link" href="$CompareLink">add to comparison</a>
 
 <% if $Features %>
-    <h3>Specifications</h3>
-    <table>
+    <h3 class="silvershop-product-specs__heading">Specifications</h3>
+    <table class="silvershop-product-specs">
 		<%-- Enable grouping by including <%  % --%>
 		<% if $Grouping %>
 			<% loop $GroupedFeatures %>
-                <tr>
-                    <th colspan="2">
+                <tr class="silvershop-product-specs__row silvershop-product-specs__row--group">
+                    <th class="silvershop-product-specs__cell silvershop-product-specs__cell--group" colspan="2">
 						<% if $Group %>
 							$Group.Title
 						<% else %>
@@ -16,17 +16,17 @@
                     </th>
                 </tr>
 				<% loop $Children %>
-                    <tr>
-                        <th>$Title</th>
-                        <td><% include SilverShop\Comparison\Includes\TypedValue %></td>
+                    <tr class="silvershop-product-specs__row silvershop-product-specs__row--feature">
+                        <th class="silvershop-product-specs__cell silvershop-product-specs__cell--feature">$Title</th>
+                        <td class="silvershop-product-specs__cell silvershop-product-specs__cell--value"><% include SilverShop\Comparison\Includes\TypedValue %></td>
                     </tr>
 				<% end_loop %>
 			<% end_loop %>
 		<% else %>
 			<% loop $Features %>
-                <tr>
-                    <th>$Title</th>
-                    <td><% include SilverShop\Comparison\Includes\TypedValue %></td>
+                <tr class="silvershop-product-specs__row silvershop-product-specs__row--feature">
+                    <th class="silvershop-product-specs__cell silvershop-product-specs__cell--feature">$Title</th>
+                    <td class="silvershop-product-specs__cell silvershop-product-specs__cell--value"><% include SilverShop\Comparison\Includes\TypedValue %></td>
                 </tr>
 			<% end_loop %>
 		<% end_if %>
