@@ -15,9 +15,9 @@ use SilverStripe\Core\Extension;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\ORM\HasManyList;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\ArrayData;
 
 /**
  * Class ProductFeaturesExtension
@@ -48,10 +48,12 @@ class ProductFeaturesExtension extends Extension
         if ($this->owner->exists()) {
             $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
             if ($sortByGroup) {
-                $features = $this->owner->Features()
-                    ->leftJoin('SilverShop_Feature', '"SilverShop_Feature"."ID"="SilverShop_ProductFeatureValue"."FeatureID"')
-                    ->leftJoin('SilverShop_FeatureGroup', '"SilverShop_FeatureGroup"."ID"="SilverShop_Feature"."GroupID"')
-                    ->sort('"SilverShop_FeatureGroup"."Title" ASC, "SilverShop_Feature"."Sort" ASC');
+                // SS6: sort() no longer accepts raw SQL / manually-joined columns.
+                // Use relation dot-notation so the ORM adds the joins itself.
+                $features = $this->owner->Features()->sort([
+                    'Feature.Group.Title' => 'ASC',
+                    'Feature.Sort' => 'ASC',
+                ]);
             } else {
                 $features = $this->owner->Features();
             }
@@ -164,12 +166,17 @@ class ProductFeaturesExtension extends Extension
         if (!empty($groupids)) {
             foreach ($groupids as $groupid) {
                 $group = FeatureGroup::get()->byID($groupid);
+                $children = $features->filter("GroupID", $groupid);
                 if ($sortByGroup) {
-                    // sort on order within group
-                    $children = $features->filter("GroupID", $groupid)->sort('"SilverShop_Feature"."Sort"');
-                } else {
-                    // sort on order at product level, default
-                    $children = $features->filter("GroupID", $groupid);
+                    // SS6: sort() can't order by the manually innerJoin'd SilverShop_Feature.Sort
+                    // column ("Invalid sort column") — sort the fetched records in PHP instead.
+                    $childArray = $children->toArray();
+                    usort($childArray, function ($a, $b) {
+                        $fa = $a->Feature();
+                        $fb = $b->Feature();
+                        return [(int) $fa->Sort, (string) $fa->Title] <=> [(int) $fb->Sort, (string) $fb->Title];
+                    });
+                    $children = ArrayList::create($childArray);
                 }
 
                 $arrayList->push(
