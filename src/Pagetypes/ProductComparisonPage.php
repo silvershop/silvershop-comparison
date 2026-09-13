@@ -102,7 +102,8 @@ class ProductComparisonPage extends Page
 
     protected function getComparisonSession(): ?Session
     {
-        if (!Controller::has_curr()) {
+        // SS6: Controller::has_curr() was removed; curr() returns null when there is no current controller.
+        if (!Controller::curr()) {
             return null;
         }
 
