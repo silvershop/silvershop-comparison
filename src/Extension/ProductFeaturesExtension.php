@@ -111,7 +111,7 @@ class ProductFeaturesExtension extends Extension
         return false;
     }
 
-    public function addAllFeaturesFromGroup($groupId): void
+    public function addAllFeaturesFromGroup(int $groupId): void
     {
         if ($group = FeatureGroup::get()->byID($groupId)) {
             $features = $group->Features();
@@ -135,8 +135,10 @@ class ProductFeaturesExtension extends Extension
 
     /**
      * Override features list with grouping.
+     *
+     * @return ArrayList<ArrayData>
      */
-    public function GroupedFeatures($showungrouped = false): ArrayList
+    public function GroupedFeatures(bool $showungrouped = false): ArrayList
     {
         $features = $this->owner->Features()
             ->innerJoin("SilverShop_Feature", "SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID");

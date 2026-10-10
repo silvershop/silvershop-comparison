@@ -5,6 +5,7 @@
     "keywords": ["silverstripe", "ecommerce", "shop", "silvershop", "comparison", "compare", "products"],
     "require" : {
         "php": "^8.1",
+        "silverstripe/cms": "^6",
         "silvershop/core": "^6",
         "php-http/guzzle7-adapter": "^1"
     },

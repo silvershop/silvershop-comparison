@@ -113,6 +113,9 @@ class Feature extends DataObject
         return $this->Title;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function summaryFields(): array
     {
         $fields = parent::summaryFields();
@@ -132,17 +135,16 @@ class Feature extends DataObject
             'String' => TextField::create("Value")
         ];
 
-        return $fields[$this->ValueType] ?? LiteralField::create("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
+        return $fields[(string) $this->ValueType] ?? LiteralField::create("Value", _t('Feature.SAVETOADDVALUE', 'Save record to add value.'));
     }
 
-    public function getValueDBField($value): DBBoolean|DBFloat|DBVarchar
+    public function getValueDBField(mixed $value): DBBoolean|DBFloat|DBVarchar
     {
-        $fields = [
+        $field = match ($this->ValueType) {
             'Boolean' => DBBoolean::create(),
             'Number' => DBFloat::create(),
-            'String' => DBVarchar::create()
-        ];
-        $field =  $fields[$this->ValueType];
+            default => DBVarchar::create(),
+        };
         $field->setValue($value);
 
         return $field;
