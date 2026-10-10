@@ -56,6 +56,9 @@ class ProductComparisonPage extends Page
         return null;
     }
 
+    /**
+     * @param array<int, int> $ids
+     */
     protected function setSelectionIDs(array $ids): static
     {
         $session = $this->getComparisonSession();
@@ -66,11 +69,14 @@ class ProductComparisonPage extends Page
         return $this;
     }
 
+    /**
+     * @return array<int, int>
+     */
     protected function getSelectionIDs(): array
     {
         $session = $this->getComparisonSession();
         if ($session && ($ids = $session->get('ProductComparisons'))) {
-            $ids = explode(',', (string) $ids);
+            $ids = array_map('intval', explode(',', (string) $ids));
 
             return array_combine($ids, $ids);
         }
@@ -78,6 +84,9 @@ class ProductComparisonPage extends Page
         return [];
     }
 
+    /**
+     * @return DataList<covariant Product>|null
+     */
     public function Comp(): ?DataList
     {
         $ids = $this->getSelectionIDs();
@@ -93,6 +102,9 @@ class ProductComparisonPage extends Page
         return count($this->getSelectionIDs());
     }
 
+    /**
+     * @return DataList<covariant Feature>
+     */
     public function Features(): DataList
     {
          return Feature::get()
@@ -107,7 +119,6 @@ class ProductComparisonPage extends Page
             return null;
         }
 
-        $request = Controller::curr()->getRequest();
-        return $request ? $request->getSession() : null;
+        return Controller::curr()->getRequest()->getSession();
     }
 }

@@ -5,10 +5,15 @@ namespace SilverShop\Comparison\Pagetypes;
 use PageController;
 use SilverShop\Comparison\Model\ProductFeatureValue;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Model\List\ArrayList;
 use SilverStripe\Model\ArrayData;
+use SilverStripe\ORM\FieldType\DBHTMLText;
 
+/**
+ * @extends PageController<ProductComparisonPage>
+ */
 class ProductComparisonPageController extends PageController
 {
     private static array $allowed_actions = [
@@ -41,7 +46,7 @@ class ProductComparisonPageController extends PageController
             $previousHadProduct = true;
 
             for ($i = 1; $i <= $max; $i++) {
-                $product = $products->limit(1, $i - 1)->First();
+                $product = $products?->limit(1, $i - 1)->first();
 
                 $output->push(
                     ArrayData::create(
@@ -67,17 +72,21 @@ class ProductComparisonPageController extends PageController
     }
 
 
-    public function ValuesForFeature($id, $pad = false): ArrayList
+    /**
+     * @return ArrayList<ProductFeatureValue|ArrayData>
+     */
+    public function ValuesForFeature(int $id, bool $pad = false): ArrayList
     {
         $outputArrayList = ArrayList::create();
 
-        foreach ($this->data()->Comp() as $comp) {
-            $outputArrayList->push(
-                ProductFeatureValue::get()
-                    ->filter("ProductID", $comp->ID)
-                    ->filter("FeatureID", $id)
-                    ->first()
-            );
+        foreach ($this->data()->Comp() ?? [] as $comp) {
+            $value = ProductFeatureValue::get()
+                ->filter("ProductID", $comp->ID)
+                ->filter("FeatureID", $id)
+                ->first();
+
+            // keep columns aligned with the compared products when a product has no value for this feature
+            $outputArrayList->push($value ?? ArrayData::create());
         }
 
         if (($max = Config::inst()->get(ProductComparisonPage::class, 'max_product_comparisons')) && ($pad && $outputArrayList->count() < $max)) {
@@ -95,9 +104,9 @@ class ProductComparisonPageController extends PageController
         return $outputArrayList;
     }
 
-    public function add(HTTPRequest $request)
+    public function add(HTTPRequest $request): DBHTMLText|HTTPResponse
     {
-        $result = $this->data()->addToSelection($request->param('ID'));
+        $result = $this->data()->addToSelection((int) $request->param('ID'));
 
         if ($request->isAjax()) {
             if ($result === null) {
@@ -118,13 +127,12 @@ class ProductComparisonPageController extends PageController
             return $this->renderWith('SilverShop\\Comparison\\Includes\\CompareMessage_Success');
         }
 
-        $this->redirect($this->Link());
-        return null;
+        return $this->redirect($this->Link());
     }
 
     public function remove(HTTPRequest $request): void
     {
-        $result = $this->data()->removeFromSelection($request->param('ID'));
+        $result = $this->data()->removeFromSelection((int) $request->param('ID'));
 
         if ($request->isAjax()) {
             if ($result === null) {

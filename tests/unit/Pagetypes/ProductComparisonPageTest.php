@@ -8,37 +8,27 @@ use SilverStripe\Dev\SapphireTest;
 
 class ProductComparisonPageTest extends SapphireTest
 {
+    protected static $extra_dataobjects = [
+        ProductComparisonPageTestDouble::class,
+    ];
+
     public function testSelectionMethodsAreSafeWithoutCurrentController(): void
     {
         $property = new \ReflectionProperty(Controller::class, 'controller_stack');
-        $property->setAccessible(true);
         $originalStack = $property->getValue();
-        $property->setValue([]);
+        $property->setValue(null, []);
 
         try {
-            $page = new ProductComparisonPageTestDouble();
+            $page = ProductComparisonPageTestDouble::create();
 
             $this->assertSame([], $page->exposeGetSelectionIDs());
 
-            $result = $page->exposeSetSelectionIDs(['1' => '1']);
+            $result = $page->exposeSetSelectionIDs([1 => 1]);
             $this->assertSame($page, $result);
             $this->assertSame([], $page->exposeGetSelectionIDs());
             $this->assertSame(0, $page->getProductCount());
         } finally {
-            $property->setValue($originalStack);
+            $property->setValue(null, $originalStack);
         }
-    }
-}
-
-class ProductComparisonPageTestDouble extends ProductComparisonPage
-{
-    public function exposeSetSelectionIDs(array $ids): static
-    {
-        return $this->setSelectionIDs($ids);
-    }
-
-    public function exposeGetSelectionIDs(): array
-    {
-        return $this->getSelectionIDs();
     }
 }
