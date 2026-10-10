@@ -68,6 +68,21 @@ class ProductFeaturesExtension extends Extension
         $dropdownField->setDescription('After save, all features of selected group will be added to the product');
 
         $fieldList->addFieldToTab('Root.Features', $dropdownField);
+
+        // Explanatory notice as the last item on the tab.
+        $fieldList->addFieldToTab(
+            'Root.Features',
+            \SilverStripe\Forms\LiteralField::create(
+                'featuresinfo',
+                '<p class="message notice" style="display:flex;align-items:flex-start;gap:.5em">'
+                . '<span class="font-icon-info-circled" aria-hidden="true"></span><span>' . _t(
+                    self::class . '.FeaturesInfo',
+                    'Features are descriptive specifications (e.g. Material, Warranty) shown on the product and '
+                    . 'used for product comparison. They do not affect price, stock, or the options a customer '
+                    . 'selects — those are set on the "Variations" tab.'
+                ) . '</span></p>'
+            )
+        );
     }
 
     public function CompareLink(): ?string
