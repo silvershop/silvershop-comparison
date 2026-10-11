@@ -18,7 +18,7 @@ class FeatureGroupMigrationTest extends SapphireTest
 
     public function testLegacyGroupAssignmentsAreMigrated(): void
     {
-        $table = DataObject::getSchema()->tableName(Feature::class) ?? self::fail('Feature has no table');
+        $table = DataObject::getSchema()->baseDataTable(Feature::class);
         $this->addLegacyColumns($table);
 
         $size = FeatureGroup::create(['Title' => 'Size']);
