@@ -7,10 +7,12 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DB;
 use SilverStripe\ORM\FieldType\DBBoolean;
 use SilverStripe\ORM\FieldType\DBFloat;
 use SilverStripe\ORM\FieldType\DBVarchar;
@@ -21,26 +23,23 @@ use SilverStripe\ORM\ManyManyList;
  * @property string $Title
  * @property ?string $Unit
  * @property ?string $ValueType
- * @property int $Sort
- * @property int $GroupID
- * @method   FeatureGroup Group()
  * @method   HasManyList<Product> Products()
  * @method   HasManyList<ProductFeatureValue> ProductFeatureValues()
  * @method   ManyManyList<Product> Product()
+ * @method   ManyManyList<FeatureGroup> Groups()
  */
 class Feature extends DataObject
 {
 
     use Configurable;
 
-    // if set to true, features are always sorted like they are within the FeatureGroup
+    // if set to true, features are always sorted like they are within each FeatureGroup
     private static bool $sort_features_by_group = false;
 
     private static array $db = [
         'Title' => 'Varchar',
         'Unit' => 'Varchar',
         'ValueType' => "Enum('Boolean,Number,String','String')",
-        'Sort' => 'Int'
     ];
 
     private static array $has_many = [
@@ -56,12 +55,9 @@ class Feature extends DataObject
         'ProductFeatureValues',
     ];
 
-    private static array $has_one = [
-        "Group" => FeatureGroup::class
-    ];
-
     private static array $belongs_many_many = [
-        "Product" => Product::class
+        "Product" => Product::class,
+        "Groups" => FeatureGroup::class . '.Features',
     ];
 
     private static array $summary_fields = [
@@ -69,7 +65,7 @@ class Feature extends DataObject
         "Unit" => "Unit"
     ];
 
-    private static string $default_sort = 'Sort ASC'; // sorting with in group
+    private static string $default_sort = 'Title ASC';
 
     private static string $table_name = 'SilverShop_Feature';
 
@@ -94,8 +90,7 @@ class Feature extends DataObject
         if ($featureGroupDataList->exists()) {
             $fieldList->insertAfter(
                 "Unit",
-                DropdownField::create("GroupID", "Group", $featureGroupDataList->map()->toArray())
-                    ->setHasEmptyDefault(true)
+                ListboxField::create("Groups", "Groups", $featureGroupDataList->map()->toArray())
             );
         }
 
@@ -106,11 +101,21 @@ class Feature extends DataObject
 
     public function listTitle(): string
     {
-        if ($this->Group()->exists()) {
-            return $this->Group()->Title . ' - ' . $this->Title;
+        $groupNames = $this->getGroupNames();
+
+        if ($groupNames !== '') {
+            return $groupNames . ' - ' . $this->Title;
         }
 
         return $this->Title;
+    }
+
+    /**
+     * Comma separated titles of the groups this feature belongs to.
+     */
+    public function getGroupNames(): string
+    {
+        return implode(', ', $this->Groups()->sort('Title')->column('Title'));
     }
 
     /**
@@ -121,10 +126,84 @@ class Feature extends DataObject
         $fields = parent::summaryFields();
 
         if (FeatureGroup::get()->exists()) {
-            $fields['Group.Title'] = 'Group';
+            $fields['GroupNames'] = 'Groups';
         }
 
         return $fields;
+    }
+
+    protected function onBeforeDelete(): void
+    {
+        parent::onBeforeDelete();
+
+        $this->Groups()->removeAll();
+    }
+
+    public function requireDefaultRecords(): void
+    {
+        parent::requireDefaultRecords();
+
+        $this->migrateLegacyGroup();
+    }
+
+    /**
+     * Features used to belong to a single group via a `GroupID` has_one, with
+     * their order in that group held in `Feature.Sort`. Copy those assignments
+     * onto the many_many join table, then retire the legacy columns so this
+     * only ever runs once.
+     */
+    protected function migrateLegacyGroup(): void
+    {
+        $dataSchema = DataObject::getSchema();
+        $dbSchema = DB::get_schema();
+        $featureTable = $dataSchema->tableName(self::class);
+
+        // Bail if already migrated, or if a project has reinstated the field itself
+        if (!$dbSchema
+            || !$featureTable
+            || !$dbSchema->hasField($featureTable, 'GroupID')
+            || $dataSchema->databaseField(self::class, 'GroupID')
+        ) {
+            return;
+        }
+
+        $groupTable = $dataSchema->tableName(FeatureGroup::class);
+        $relation = FeatureGroup::featuresJoin();
+        $joinTable = $relation['join'];
+        $groupField = $relation['parentField'];
+        $featureField = $relation['childField'];
+
+        $migrateSort = $dbSchema->hasField($featureTable, 'Sort')
+            && !$dataSchema->databaseField(self::class, 'Sort');
+
+        DB::query(sprintf(
+            'INSERT INTO "%1$s" ("%2$s", "%3$s", "Sort")
+            SELECT "f"."GroupID", "f"."ID", %4$s
+            FROM "%5$s" "f"
+            INNER JOIN "%6$s" "g" ON "g"."ID" = "f"."GroupID"
+            WHERE NOT EXISTS (
+                SELECT 1 FROM "%1$s" "j" WHERE "j"."%2$s" = "f"."GroupID" AND "j"."%3$s" = "f"."ID"
+            )',
+            $joinTable,
+            $groupField,
+            $featureField,
+            $migrateSort ? '"f"."Sort"' : '0',
+            $featureTable,
+            $groupTable
+        ));
+
+        $migrated = DB::affected_rows();
+
+        $dbSchema->dontRequireField($featureTable, 'GroupID');
+
+        if ($migrateSort) {
+            $dbSchema->dontRequireField($featureTable, 'Sort');
+        }
+
+        DB::alteration_message(
+            sprintf('Migrated %d feature group assignments to %s', $migrated, $joinTable),
+            'changed'
+        );
     }
 
     public function getValueField(): CheckboxField|NumericField|TextField|LiteralField

@@ -4,6 +4,7 @@ namespace SilverShop\Comparison\GridField;
 use SilverShop\Comparison\Model\Feature;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use SilverStripe\Forms\GridField\GridFieldButtonRow;
 use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
@@ -41,15 +42,19 @@ class GridFieldConfig_FeatureGroup extends GridFieldConfig
         $editableColumns->setDisplayFields($displayFields);
         $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
         if ($sortByGroup) {
-            $this->addComponent(GridFieldOrderableRows::create());
+            // Order within the group is held on the many_many join table
+            $this->addComponent(GridFieldOrderableRows::create('Sort'));
         }
 
         $this->addComponent(GridFieldButtonRow::create('before'));
         $this->addComponent(GridFieldAddNewInlineButton::create('buttons-before-left'));
+        // Features can belong to several groups, so allow linking existing ones
+        $this->addComponent(GridFieldAddExistingAutocompleter::create('buttons-before-right', ['Title']));
         $this->addComponent(GridFieldToolbarHeader::create());
         $this->addComponent(GridFieldTitleHeader::create());
         $this->addComponent(GridFieldFooter::create());
-        $this->addComponent(GridFieldDeleteAction::create());
+        // Unlink from this group only; the feature may be used by other groups and products
+        $this->addComponent(GridFieldDeleteAction::create(true));
         $this->extend('updateConfig');
     }
 }
