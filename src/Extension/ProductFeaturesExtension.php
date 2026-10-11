@@ -151,9 +151,9 @@ class ProductFeaturesExtension extends Extension
      * Product feature values bucketed by feature group. A feature that belongs
      * to several groups is listed under each of them.
      *
-     * Groups appear in the order their features first appear on the product,
-     * or alphabetically when `Feature.sort_features_by_group` is enabled (in
-     * which case features follow their order within each group).
+     * Features within a group follow that group's sort order. Groups appear
+     * in the order their features first appear on the product, or
+     * alphabetically when `Feature.sort_features_by_group` is enabled.
      *
      * @return ArrayList<ArrayData>
      */
@@ -188,7 +188,7 @@ class ProductFeaturesExtension extends Extension
             $groupSortByFeature[(int) $row['FeatureID']][(int) $row['GroupID']] = (int) $row['Sort'];
         }
 
-        // Feature titles break ties when ordering within a group
+        // Feature titles break ties in the group sort order
         $featureTitles = Feature::get()->byIDs($featureIDs)->map('ID', 'Title')->toArray();
 
         /** @var array<int, ProductFeatureValue[]> $byGroup */
@@ -226,13 +226,11 @@ class ProductFeaturesExtension extends Extension
                 }
 
                 $children = $byGroup[$groupID];
-                if ($sortByGroup) {
-                    $sortKey = fn (ProductFeatureValue $value) => [
-                        $groupSortByFeature[(int) $value->FeatureID][$groupID],
-                        (string) ($featureTitles[$value->FeatureID] ?? ''),
-                    ];
-                    usort($children, fn (ProductFeatureValue $a, ProductFeatureValue $b) => $sortKey($a) <=> $sortKey($b));
-                }
+                $sortKey = fn (ProductFeatureValue $value) => [
+                    $groupSortByFeature[(int) $value->FeatureID][$groupID],
+                    (string) ($featureTitles[$value->FeatureID] ?? ''),
+                ];
+                usort($children, fn (ProductFeatureValue $a, ProductFeatureValue $b) => $sortKey($a) <=> $sortKey($b));
 
                 $arrayList->push(ArrayData::create([
                     'Group' => $groups[$groupID],

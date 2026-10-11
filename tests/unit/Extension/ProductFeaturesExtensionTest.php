@@ -47,11 +47,22 @@ class ProductFeaturesExtensionTest extends SapphireTest
     {
         $grouped = $this->summarise($this->product->GroupedFeatures());
 
-        // Groups in order of first appearance on the product, children in product order
+        // Groups in order of first appearance on the product, children in group order
         $this->assertSame([
             'Size' => ['Height', 'Weight'],
             'Shipping' => ['Weight'],
         ], $grouped);
+    }
+
+    public function testChildrenFollowGroupOrderNotProductOrder(): void
+    {
+        // Product lists Height before Weight; the Size group puts Weight first
+        $this->size->Features()->add($this->weight, ['Sort' => 0]);
+
+        $this->assertSame(
+            ['Weight', 'Height'],
+            $this->summarise($this->product->GroupedFeatures())['Size']
+        );
     }
 
     public function testUngroupedFeaturesAreOptional(): void

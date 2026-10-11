@@ -33,7 +33,8 @@ class Feature extends DataObject
 
     use Configurable;
 
-    // if set to true, features are always sorted like they are within each FeatureGroup
+    // if set to true, groups are listed alphabetically and the product CMS
+    // grid follows feature titles rather than a manual per-product order
     private static bool $sort_features_by_group = false;
 
     private static array $db = [

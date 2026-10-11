@@ -2,7 +2,6 @@
 namespace SilverShop\Comparison\GridField;
 
 use SilverShop\Comparison\Model\Feature;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use SilverStripe\Forms\GridField\GridFieldButtonRow;
@@ -40,11 +39,8 @@ class GridFieldConfig_FeatureGroup extends GridFieldConfig
 
         $this->addComponent($editableColumns = GridFieldEditableColumns::create());
         $editableColumns->setDisplayFields($displayFields);
-        $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
-        if ($sortByGroup) {
-            // Order within the group is held on the many_many join table
-            $this->addComponent(GridFieldOrderableRows::create('Sort'));
-        }
+        // Order within the group is held on the many_many join table
+        $this->addComponent(GridFieldOrderableRows::create('Sort'));
 
         $this->addComponent(GridFieldButtonRow::create('before'));
         $this->addComponent(GridFieldAddNewInlineButton::create('buttons-before-left'));
