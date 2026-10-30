@@ -16,7 +16,9 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Model\List\ArrayList;
+use SilverStripe\ORM\DB;
 use SilverStripe\ORM\HasManyList;
+use SilverStripe\ORM\Queries\SQLSelect;
 use SilverStripe\Model\ArrayData;
 
 /**
@@ -48,12 +50,9 @@ class ProductFeaturesExtension extends Extension
         if ($this->owner->exists()) {
             $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
             if ($sortByGroup) {
-                // SS6: sort() no longer accepts raw SQL / manually-joined columns.
-                // Use relation dot-notation so the ORM adds the joins itself.
-                $features = $this->owner->Features()->sort([
-                    'Feature.Group.Title' => 'ASC',
-                    'Feature.Sort' => 'ASC',
-                ]);
+                // Features can sit in several groups so there is no single group
+                // order to follow here; list them alphabetically instead.
+                $features = $this->owner->Features()->sort('Feature.Title', 'ASC');
             } else {
                 $features = $this->owner->Features();
             }
@@ -129,7 +128,7 @@ class ProductFeaturesExtension extends Extension
     public function addAllFeaturesFromGroup(int $groupId): void
     {
         if ($group = FeatureGroup::get()->byID($groupId)) {
-            $features = $group->Features();
+            $features = $group->SortedFeatures();
             $sort = $this->owner->Features()->max('Sort') + 1;
 
             foreach ($features as $feature) {
@@ -149,75 +148,101 @@ class ProductFeaturesExtension extends Extension
     }
 
     /**
-     * Override features list with grouping.
+     * Product feature values bucketed by feature group. A feature that belongs
+     * to several groups is listed under each of them.
+     *
+     * Features within a group follow that group's sort order. Groups appear
+     * in the order their features first appear on the product, or
+     * alphabetically when `Feature.sort_features_by_group` is enabled.
      *
      * @return ArrayList<ArrayData>
      */
     public function GroupedFeatures(bool $showungrouped = false): ArrayList
     {
-        $features = $this->owner->Features()
-            ->innerJoin("SilverShop_Feature", "SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID");
-
-        $featuresids = $features->getIDList();
-        if (empty($featuresids)) {
-            return ArrayList::create();
-        }
-
-        // check sorting option
-        $sortByGroup = Config::inst()->get(Feature::class, 'sort_features_by_group');
-
-        //figure out feature groups
-        $groups = FeatureGroup::get()
-            ->innerJoin("SilverShop_Feature", "SilverShop_Feature.GroupID = SilverShop_FeatureGroup.ID")
-            ->innerJoin("SilverShop_ProductFeatureValue", "SilverShop_Feature.ID = SilverShop_ProductFeatureValue.FeatureID")
-            ->where("SilverShop_ProductFeatureValue.ID IN (" . implode(',', $featuresids) . ")");
-
-        if ($sortByGroup) {
-            $groups = $groups->sort('Title ASC');
-        }
-
-        $groupids = $groups->getIDList();
-
-        //pack existing features into seperate lists
+        $values = $this->owner->Features()->filter('Feature.ID:GreaterThan', 0)->toArray();
         $arrayList = ArrayList::create();
-        if (!empty($groupids)) {
-            foreach ($groupids as $groupid) {
-                $group = FeatureGroup::get()->byID($groupid);
-                $children = $features->filter("GroupID", $groupid);
-                if ($sortByGroup) {
-                    // SS6: sort() can't order by the manually innerJoin'd SilverShop_Feature.Sort
-                    // column ("Invalid sort column") — sort the fetched records in PHP instead.
-                    $childArray = $children->toArray();
-                    usort($childArray, function ($a, $b) {
-                        $fa = $a->Feature();
-                        $fb = $b->Feature();
-                        return [(int) $fa->Sort, (string) $fa->Title] <=> [(int) $fb->Sort, (string) $fb->Title];
-                    });
-                    $children = ArrayList::create($childArray);
-                }
 
-                $arrayList->push(
-                    ArrayData::create(
-                        [
-                        'Group' => $group,
-                        'Children' => $children
-                        ]
-                    )
-                );
+        if (empty($values)) {
+            return $arrayList;
+        }
+
+        $sortByGroup = (bool) Config::inst()->get(Feature::class, 'sort_features_by_group');
+        $featureIDs = array_unique(array_map(fn (ProductFeatureValue $value) => (int) $value->FeatureID, $values));
+
+        // Fetch every group membership for these features in one query.
+        $relation = FeatureGroup::featuresJoin();
+        $memberships = SQLSelect::create(
+            [
+                'GroupID' => sprintf('"%s"', $relation['parentField']),
+                'FeatureID' => sprintf('"%s"', $relation['childField']),
+                'Sort' => '"Sort"',
+            ],
+            sprintf('"%s"', $relation['join'])
+        )
+            ->addWhere([sprintf('"%s" IN (%s)', $relation['childField'], DB::placeholders($featureIDs)) => $featureIDs])
+            ->execute();
+
+        /** @var array<int, array<int, int>> $groupSortByFeature FeatureID => [GroupID => Sort] */
+        $groupSortByFeature = [];
+        foreach ($memberships as $row) {
+            $groupSortByFeature[(int) $row['FeatureID']][(int) $row['GroupID']] = (int) $row['Sort'];
+        }
+
+        // Feature titles break ties in the group sort order
+        $featureTitles = Feature::get()->byIDs($featureIDs)->map('ID', 'Title')->toArray();
+
+        /** @var array<int, ProductFeatureValue[]> $byGroup */
+        $byGroup = [];
+        $ungrouped = [];
+        foreach ($values as $value) {
+            $groupSorts = $groupSortByFeature[(int) $value->FeatureID] ?? [];
+            if (empty($groupSorts)) {
+                $ungrouped[] = $value;
+                continue;
+            }
+            foreach (array_keys($groupSorts) as $groupID) {
+                $byGroup[$groupID][] = $value;
+            }
+        }
+
+        if (!empty($byGroup)) {
+            /** @var array<int, FeatureGroup> $groups */
+            $groups = [];
+            foreach (FeatureGroup::get()->byIDs(array_keys($byGroup)) as $group) {
+                $groups[$group->ID] = $group;
             }
 
-            if ($showungrouped) {
-                $ungrouped = $features->filter("GroupID:not", $groupids);
-                if ($ungrouped->exists()) {
-                    $arrayList->push(
-                        ArrayData::create(
-                            [
-                            'Children' => $ungrouped
-                            ]
-                        )
-                    );
-                }
+            $groupIDs = array_keys($byGroup);
+            if ($sortByGroup) {
+                usort($groupIDs, fn (int $a, int $b) => strcasecmp(
+                    (string) ($groups[$a]->Title ?? ''),
+                    (string) ($groups[$b]->Title ?? '')
+                ));
             }
+
+            foreach ($groupIDs as $groupID) {
+                if (!isset($groups[$groupID])) {
+                    continue;
+                }
+
+                $children = $byGroup[$groupID];
+                $sortKey = fn (ProductFeatureValue $value) => [
+                    $groupSortByFeature[(int) $value->FeatureID][$groupID],
+                    (string) ($featureTitles[$value->FeatureID] ?? ''),
+                ];
+                usort($children, fn (ProductFeatureValue $a, ProductFeatureValue $b) => $sortKey($a) <=> $sortKey($b));
+
+                $arrayList->push(ArrayData::create([
+                    'Group' => $groups[$groupID],
+                    'Children' => ArrayList::create($children),
+                ]));
+            }
+        }
+
+        if ($showungrouped && !empty($ungrouped)) {
+            $arrayList->push(ArrayData::create([
+                'Children' => ArrayList::create($ungrouped),
+            ]));
         }
 
         return $arrayList;
