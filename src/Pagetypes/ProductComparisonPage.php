@@ -23,7 +23,10 @@ class ProductComparisonPage extends Page
 
     public function addToSelection(int $id): ?bool
     {
-        if ($product = Product::get()->byID($id)) {
+        $product = Product::get()->byID($id);
+
+        // don't let visitors add products they aren't allowed to see (e.g. restricted to a group)
+        if ($product && $product->canView()) {
             $all = $this->getSelectionIDs();
             $all[$id] = $id;
 
